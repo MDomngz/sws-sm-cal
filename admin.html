@@ -338,6 +338,7 @@ footer.page-foot{
 </dialog>
 
 <script src="posts.js"></script>
+<script src="drive.js"></script>
 <script>
 (function(){
   'use strict';
@@ -597,6 +598,7 @@ footer.page-foot{
       html += '<div class="form-row"><div class="field-label">Platform</div><input type="text" id="pfPlatform" value="' + escapeHtml(post.platform || 'Instagram (auto-crossposts to Facebook + Stories)') + '"></div>';
       html += '<div class="form-row"><div class="field-label">Caption <span style="text-transform:none;font-weight:400;">(leave blank for a title-only placeholder)</span></div><textarea id="pfCaption" class="tall">' + escapeHtml(post.caption || '') + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Hashtags <span style="text-transform:none;font-weight:400;">(one per line, or comma-separated)</span></div><textarea id="pfHashtags">' + escapeHtml((post.hashtags || []).join('\n')) + '</textarea></div>';
+      html += '<div class="form-row"><div class="field-label">Image links <span style="text-transform:none;font-weight:400;">(Google Drive, up to 6, one per line — file must be shared "Anyone with the link can view" to show a thumbnail)</span></div><textarea id="pfImages">' + escapeHtml((post.images || []).join('\n')) + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Photo / video direction</div><textarea id="pfVisual">' + escapeHtml(post.visual || '') + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Alt text</div><textarea id="pfAlt">' + escapeHtml(post.alt || '') + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Note to reviewers <span style="text-transform:none;font-weight:400;">(optional, e.g. "this is a shell")</span></div><textarea id="pfNote">' + escapeHtml(post.note || '') + '</textarea></div>';
@@ -633,6 +635,10 @@ footer.page-foot{
       var hashtagsRaw = document.getElementById('pfHashtags').value;
       var hashtags = hashtagsRaw.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean);
 
+      var imagesRaw = document.getElementById('pfImages').value;
+      var images = imagesRaw.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean);
+      if (images.length > 6){ errEl.textContent = 'Up to 6 image links only — trim the list (currently ' + images.length + ').'; return; }
+
       var payload = {
         pin: ADMIN_PIN,
         date: date,
@@ -640,6 +646,7 @@ footer.page-foot{
         platform: document.getElementById('pfPlatform').value.trim(),
         caption: document.getElementById('pfCaption').value,
         hashtags: hashtags,
+        images: images,
         visual: document.getElementById('pfVisual').value.trim(),
         alt: document.getElementById('pfAlt').value.trim(),
         note: document.getElementById('pfNote').value.trim(),
@@ -717,6 +724,7 @@ footer.page-foot{
           platform: 'Instagram (auto-crossposts to Facebook + Stories)',
           caption: 'The actual caption text, with real line breaks where they belong.',
           hashtags: ['#SusquehannaWaldorf', '#SWS'],
+          images: [],
           visual: 'Photo/video direction — what to shoot or select.',
           alt: 'Alt text describing the image, for accessibility.',
           note: '',
@@ -725,7 +733,7 @@ footer.page-foot{
       }, null, 2));
       lines.push('```');
       lines.push('');
-      lines.push('Use "shell": true and a short "note" only if the post needs something from someone else (like day-of photos) before it\'s ready. To revise an existing post, reuse that date; to add a new one, use a date not already on the calendar.');
+      lines.push('Use "shell": true and a short "note" only if the post needs something from someone else (like day-of photos) before it\'s ready. To revise an existing post, reuse that date; to add a new one, use a date not already on the calendar. "images" is optional — up to 6 Google Drive links (each file must be shared "Anyone with the link can view"); leave it an empty array if there\'s nothing to attach yet.');
 
       return lines.join('\n');
     }
@@ -804,7 +812,9 @@ footer.page-foot{
         var cls = e.problems.length ? 'error' : (e.isUpdate ? 'update' : 'new');
         var tag = e.problems.length ? 'Skipped' : (e.isUpdate ? 'Will update existing post' : 'New');
         var titleText = (e.entry && e.entry.title) ? e.entry.title : '(untitled)';
-        html += '<div class="import-row ' + cls + '"><span>' + escapeHtml(e.date) + ' — ' + escapeHtml(titleText) + '</span>' +
+        var imgCount = (e.entry && Array.isArray(e.entry.images)) ? e.entry.images.length : 0;
+        var imgNote = imgCount ? ' · ' + imgCount + ' image' + (imgCount === 1 ? '' : 's') : '';
+        html += '<div class="import-row ' + cls + '"><span>' + escapeHtml(e.date) + ' — ' + escapeHtml(titleText) + escapeHtml(imgNote) + '</span>' +
           '<span class="tag">' + escapeHtml(tag) + (e.problems.length ? ': ' + escapeHtml(e.problems.join(', ')) : '') + '</span></div>';
       });
 
@@ -845,6 +855,9 @@ footer.page-foot{
         var hashtags = Array.isArray(e.hashtags)
           ? e.hashtags.map(function(t){ return String(t).trim(); }).filter(Boolean)
           : (typeof e.hashtags === 'string' ? e.hashtags.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean) : []);
+        var images = Array.isArray(e.images)
+          ? e.images.map(function(t){ return String(t).trim(); }).filter(Boolean).slice(0, 6)
+          : (typeof e.images === 'string' ? e.images.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean).slice(0, 6) : []);
         var payload = {
           pin: ADMIN_PIN,
           date: item.date,
@@ -852,6 +865,7 @@ footer.page-foot{
           platform: e.platform || '',
           caption: e.caption || '',
           hashtags: hashtags,
+          images: images,
           visual: e.visual || '',
           alt: e.alt || '',
           note: e.note || '',

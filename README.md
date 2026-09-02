@@ -9,7 +9,7 @@ This is a static site (`index.html` for reviewers, `admin.html` for Correne) plu
 **1. Put this folder on GitHub.**
 - Go to [github.com](https://github.com) and sign in (or create a free account).
 - Click **New repository**, name it something like `sws-content-proofing`, keep it Private or Public (either works), and create it.
-- On the new repo's page, click **uploading an existing file** and drag in every file from this folder — `index.html`, `admin.html`, `posts.js`, `package.json`, `.gitignore`, `vercel.json`, `README.md`, and the `api` folder with `approvals.js`, `posts.js`, and `digest.js` inside it. Commit the upload.
+- On the new repo's page, click **uploading an existing file** and drag in every file from this folder — `index.html`, `admin.html`, `posts.js`, `drive.js`, `package.json`, `.gitignore`, `vercel.json`, `README.md`, and the `api` folder with `approvals.js`, `posts.js`, and `digest.js` inside it. Commit the upload.
 
 **2. Import it into Vercel.**
 - Go to [vercel.com](https://vercel.com) and sign in with your GitHub account (this also connects the two).
@@ -42,6 +42,14 @@ She "logs in" with a short PIN (defaults to `sws2026`). This is a light deterren
 2. Vercel → your project → **Settings → Environment Variables** → add or edit `ADMIN_PIN` to the *same* value, then redeploy.
 
 If you only change #1, the server (api/posts.js, api/digest.js) still accepts the old default — anyone who knows it could still push edits or trigger a send. Setting #2 is what actually enforces it.
+
+## Adding images (Google Drive links)
+
+Every post can carry up to 6 image links, shown as a thumbnail grid reviewers can click through to the full image on Drive.
+
+**To add them:** in the admin page's Add/Edit form, paste up to 6 Google Drive links into "Image links," one per line (or comma-separated). Each file needs its Drive sharing set to **"Anyone with the link can view"** — otherwise the thumbnail won't load and it falls back to a plain "Open image" link instead (safe either way, just less convenient). This works with the standard link Drive gives you from its Share button, in any of its usual shapes (`.../file/d/.../view`, `.../open?id=...`, `.../uc?id=...`).
+
+**How it works:** `drive.js` (a small shared helper, loaded by both `index.html` and `admin.html`) picks the file ID out of whatever link shape you pasted and builds a thumbnail URL from it. That thumbnail endpoint is an unofficial one Google doesn't formally document, but it's what most small tools use for exactly this and has been stable in practice — if it ever stops working for a given link, reviewers still get a working "Open image" link, they just lose the inline preview.
 
 ## Importing content from Claude
 

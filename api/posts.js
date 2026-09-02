@@ -66,12 +66,20 @@ module.exports = async (req, res) => {
       const hashtags = Array.isArray(body.hashtags)
         ? body.hashtags.map((t) => String(t).trim()).filter(Boolean).slice(0, 30)
         : [];
+      // Up to 6 Google Drive links per post. Kept as opaque strings -- no
+      // format validation beyond "non-empty, reasonable length" here, since
+      // Drive URLs come in several shapes (file/d/, open?id=, uc?id=) and
+      // the frontend (drive.js) is what actually parses them for display.
+      const images = Array.isArray(body.images)
+        ? body.images.map((t) => String(t).trim()).filter(Boolean).slice(0, 6).map((t) => t.slice(0, 2000))
+        : [];
 
       const post = {
         title,
         platform: (typeof body.platform === 'string' ? body.platform : '').trim().slice(0, 200),
         caption,
         hashtags,
+        images,
         visual: (typeof body.visual === 'string' ? body.visual : '').trim().slice(0, 2000),
         alt: (typeof body.alt === 'string' ? body.alt : '').trim().slice(0, 500),
         note: (typeof body.note === 'string' ? body.note : '').trim().slice(0, 500),

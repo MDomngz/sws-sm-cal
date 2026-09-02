@@ -206,6 +206,12 @@ dialog::backdrop{ background:rgba(30,24,14,0.45); }
 .form-row textarea{ resize:vertical; min-height:4.5rem; }
 .form-row textarea.tall{ min-height:7rem; }
 .form-row .hint{ font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem; }
+.image-links-list{ display:flex; flex-direction:column; gap:0.4rem; }
+.image-link-row{ display:flex; align-items:center; gap:0.5rem; }
+.image-link-row .image-link-num{
+  flex:none; width:1.1rem; text-align:right; font-size:0.8rem; color:var(--text-muted); font-variant-numeric:tabular-nums;
+}
+.image-link-row input{ flex:1; }
 .checkline{ display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; margin-top:0.9rem; }
 .pending-note{
   background:color-mix(in srgb, var(--bad) 10%, var(--surface)); border:1px solid var(--bad);
@@ -598,7 +604,12 @@ footer.page-foot{
       html += '<div class="form-row"><div class="field-label">Platform</div><input type="text" id="pfPlatform" value="' + escapeHtml(post.platform || 'Instagram (auto-crossposts to Facebook + Stories)') + '"></div>';
       html += '<div class="form-row"><div class="field-label">Caption <span style="text-transform:none;font-weight:400;">(leave blank for a title-only placeholder)</span></div><textarea id="pfCaption" class="tall">' + escapeHtml(post.caption || '') + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Hashtags <span style="text-transform:none;font-weight:400;">(one per line, or comma-separated)</span></div><textarea id="pfHashtags">' + escapeHtml((post.hashtags || []).join('\n')) + '</textarea></div>';
-      html += '<div class="form-row"><div class="field-label">Image links <span style="text-transform:none;font-weight:400;">(Google Drive, up to 6, one per line — file must be shared "Anyone with the link can view" to show a thumbnail)</span></div><textarea id="pfImages">' + escapeHtml((post.images || []).join('\n')) + '</textarea></div>';
+      html += '<div class="form-row"><div class="field-label">Image links <span style="text-transform:none;font-weight:400;">(Google Drive, up to 6 — file must be shared "Anyone with the link can view" to show a thumbnail)</span></div><div class="image-links-list">';
+      for (var imgI = 0; imgI < 6; imgI++){
+        html += '<div class="image-link-row"><span class="image-link-num">' + (imgI + 1) + '</span>' +
+          '<input type="text" id="pfImage' + imgI + '" placeholder="Paste a Google Drive link…" value="' + escapeHtml((post.images && post.images[imgI]) || '') + '"></div>';
+      }
+      html += '</div></div>';
       html += '<div class="form-row"><div class="field-label">Photo / video direction</div><textarea id="pfVisual">' + escapeHtml(post.visual || '') + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Alt text</div><textarea id="pfAlt">' + escapeHtml(post.alt || '') + '</textarea></div>';
       html += '<div class="form-row"><div class="field-label">Note to reviewers <span style="text-transform:none;font-weight:400;">(optional, e.g. "this is a shell")</span></div><textarea id="pfNote">' + escapeHtml(post.note || '') + '</textarea></div>';
@@ -635,9 +646,12 @@ footer.page-foot{
       var hashtagsRaw = document.getElementById('pfHashtags').value;
       var hashtags = hashtagsRaw.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean);
 
-      var imagesRaw = document.getElementById('pfImages').value;
-      var images = imagesRaw.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean);
-      if (images.length > 6){ errEl.textContent = 'Up to 6 image links only — trim the list (currently ' + images.length + ').'; return; }
+      var images = [];
+      for (var imgI = 0; imgI < 6; imgI++){
+        var imgEl = document.getElementById('pfImage' + imgI);
+        var imgVal = imgEl ? imgEl.value.trim() : '';
+        if (imgVal) images.push(imgVal);
+      }
 
       var payload = {
         pin: ADMIN_PIN,

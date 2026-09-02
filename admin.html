@@ -70,7 +70,7 @@ p{ margin:0 0 0.9em; max-width:68ch; }
 button{ font-family:inherit; }
 .eyebrow{ font-family:'Source Sans 3',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.11em; text-transform:uppercase; color:var(--accent-3); }
 
-.wrap{ max-width:760px; margin:0 auto; padding:2.4rem clamp(1.2rem,4vw,3rem) 5rem; }
+.wrap{ max-width:820px; margin:0 auto; padding:2.4rem clamp(1.2rem,4vw,3rem) 5rem; }
 
 .topbar{
   display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap;
@@ -78,7 +78,7 @@ button{ font-family:inherit; }
   font-size:0.85rem; color:var(--text-muted);
 }
 .topbar .mark{ font-family:'Fraunces',serif; font-weight:650; color:var(--accent); }
-.topbar a{ color:var(--text-muted); }
+.topbar a{ color:var(--text-muted); cursor:pointer; }
 .topbar a:hover{ color:var(--text); }
 
 /* ---------- PIN gate ---------- */
@@ -123,8 +123,13 @@ button{ font-family:inherit; }
   padding:0.9rem 1.2rem; margin-bottom:1.8rem; font-size:0.9rem; color:var(--text-muted);
 }
 
+/* ---------- sections ---------- */
+section.panel{ margin-bottom:2.4rem; }
+section.panel h2{ font-size:1.05rem; margin-bottom:0.9rem; }
+.panel-head{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap; }
+.panel-head h2{ margin-bottom:0; }
+
 /* ---------- activity feed ---------- */
-.feed h2{ font-size:1.05rem; margin-bottom:0.9rem; }
 .feed-item{
   background:var(--surface); border:1px solid var(--border); border-radius:6px;
   padding:0.85rem 1rem; margin-bottom:0.7rem; position:relative;
@@ -142,8 +147,82 @@ button{ font-family:inherit; }
   display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
   background:var(--bad); color:#FBF7EE; border-radius:99px; padding:0.12rem 0.5rem; margin-right:0.5rem; vertical-align:middle;
 }
-.feed-item .open-link{ font-size:0.8rem; display:inline-block; margin-top:0.4rem; }
+.feed-item .row-actions{ display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem; }
+.feed-item .row-actions a, .feed-item .row-actions button{ font-size:0.8rem; }
 .feed-empty{ font-size:0.9rem; color:var(--text-muted); font-style:italic; }
+
+/* ---------- manage posts list ---------- */
+.post-row{
+  display:flex; justify-content:space-between; align-items:center; gap:0.8rem; flex-wrap:wrap;
+  background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  padding:0.7rem 0.9rem; margin-bottom:0.55rem;
+}
+.post-row.needs-changes{ border-color:var(--bad); }
+.post-row .info{ min-width:0; }
+.post-row .info .d{ font-size:0.76rem; color:var(--text-muted); }
+.post-row .info .t{ font-weight:700; }
+.post-row .tagrow{ display:flex; gap:0.4rem; align-items:center; flex-wrap:wrap; }
+.pill{
+  display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+  padding:0.15rem 0.5rem; border-radius:99px;
+}
+.pill.approved{ background:color-mix(in srgb, var(--good) 22%, transparent); color:var(--good-ink); }
+.pill.changes_requested{ background:color-mix(in srgb, var(--bad) 20%, transparent); color:var(--bad-ink); }
+.pill.pending{ background:color-mix(in srgb, var(--warn) 20%, transparent); color:var(--warn); }
+.pill.notdrafted{ background:var(--surface-2); color:var(--text-muted); }
+
+/* ---------- buttons ---------- */
+.btn{
+  font-size:0.86rem; font-weight:600; padding:0.5rem 0.9rem; border-radius:5px; cursor:pointer;
+  border:1px solid var(--border-strong); background:var(--surface-2); color:var(--text);
+}
+.btn:hover{ background:var(--surface-3); }
+.btn.primary{ background:var(--accent); border-color:var(--accent-ink); color:#FBF7EE; }
+.btn.primary:hover{ filter:brightness(0.95); }
+.btn.good{ background:var(--good); border-color:var(--good-ink); color:#FBF7EE; }
+.btn.good:hover{ filter:brightness(0.95); }
+.btn:disabled{ opacity:0.55; cursor:not-allowed; }
+.btn.small{ font-size:0.78rem; padding:0.35rem 0.7rem; }
+
+/* ---------- edit dialog ---------- */
+dialog{
+  border:none; border-radius:8px; padding:0; background:var(--surface); color:var(--text);
+  max-width:600px; width:92vw; box-shadow:0 24px 60px -20px rgba(0,0,0,0.4);
+}
+dialog::backdrop{ background:rgba(30,24,14,0.45); }
+.dlg-inner{ padding:1.6rem 1.7rem 1.8rem; max-height:82vh; overflow-y:auto; }
+.dlg-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1rem; }
+.dlg-head h2{ font-size:1.25rem; }
+.dlg-close{
+  flex:none; width:1.9rem; height:1.9rem; border-radius:50%; border:1px solid var(--border-strong);
+  background:var(--surface-2); color:var(--text); font-size:1rem; line-height:1; cursor:pointer;
+}
+.field-label{ font-size:0.72rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--accent-3); margin:0.9rem 0 0.3rem; }
+.field-label:first-of-type{ margin-top:0; }
+.form-row input[type=text], .form-row input[type=date], .form-row textarea{
+  width:100%; font-family:'Source Sans 3',sans-serif; font-size:0.92rem;
+  padding:0.55rem 0.65rem; border:1px solid var(--border-strong); border-radius:5px; background:var(--bg); color:var(--text);
+}
+.form-row textarea{ resize:vertical; min-height:4.5rem; }
+.form-row textarea.tall{ min-height:7rem; }
+.form-row .hint{ font-size:0.78rem; color:var(--text-muted); margin-top:0.2rem; }
+.checkline{ display:flex; align-items:center; gap:0.5rem; font-size:0.88rem; margin-top:0.9rem; }
+.pending-note{
+  background:color-mix(in srgb, var(--bad) 10%, var(--surface)); border:1px solid var(--bad);
+  border-radius:6px; padding:0.7rem 0.9rem; margin-bottom:1.1rem; font-size:0.86rem;
+}
+.pending-note .eyebrow{ color:var(--bad-ink); display:block; margin-bottom:0.3rem; }
+.dlg-actions{ display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1.3rem; align-items:center; }
+.dlg-err{ font-size:0.84rem; color:var(--bad-ink); margin-top:0.5rem; }
+
+/* ---------- digest preview ---------- */
+.digest-preview{
+  background:var(--mono-bg); color:var(--mono-text); border-radius:6px; padding:1rem 1.1rem;
+  font-family:'JetBrains Mono',monospace; font-size:0.78rem; line-height:1.6; white-space:pre-wrap;
+  max-height:320px; overflow-y:auto; margin-bottom:0.8rem;
+}
+.digest-note{ font-size:0.84rem; color:var(--text-muted); margin-top:0.5rem; }
+.digest-note.ok{ color:var(--good-ink); }
 
 .conn-note{ font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem; }
 .conn-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:0.4em; background:var(--border-strong); }
@@ -163,10 +242,10 @@ footer.page-foot{
   <div class="gate">
     <span class="eyebrow">Correne only</span>
     <h1>Admin sign-in</h1>
-    <p>This page isn't linked from the calendar Courtney and Liz use — it's just for you. Enter the admin PIN to see what's changed.</p>
+    <p>This page isn't linked from the calendar Courtney and Liz use — it's just for you. Enter the admin PIN to manage posts and see what's changed.</p>
     <input type="password" id="pinInput" inputmode="numeric" placeholder="PIN" autocomplete="off">
     <div class="err" id="pinErr"></div>
-    <button class="btn" id="pinSubmit" style="width:100%; font-size:0.92rem; font-weight:600; padding:0.6rem 1rem; border-radius:5px; cursor:pointer; border:1px solid var(--border-strong); background:var(--accent); color:#FBF7EE;">Enter</button>
+    <button class="btn primary" id="pinSubmit" style="width:100%;">Enter</button>
   </div>
 </div>
 
@@ -176,14 +255,14 @@ footer.page-foot{
     <span>
       <a href="index.html">Open reviewer calendar</a>
       &nbsp;·&nbsp;
-      <a href="#" id="signOutLink">Sign out</a>
+      <a id="signOutLink">Sign out</a>
     </span>
   </div>
 
   <div class="masthead">
-    <span class="eyebrow">What's changed</span>
+    <span class="eyebrow">Manage content &amp; see what's changed</span>
     <h1>Content proofing — admin</h1>
-    <p class="dek">Everything Courtney and Liz have approved or flagged, newest first. This updates automatically while you have the page open.</p>
+    <p class="dek">Add and edit posts, resolve change requests, and check the daily email digest — all from here.</p>
   </div>
 
   <div class="conn-note"><span class="conn-dot" id="connDot"></span><span id="connNoteText">Connecting…</span></div>
@@ -192,15 +271,35 @@ footer.page-foot{
 
   <div id="notifyZone"></div>
 
-  <div class="feed">
+  <section class="panel">
+    <div class="panel-head">
+      <h2>Manage posts</h2>
+      <button class="btn primary small" id="btnAddPost">+ Add new post</button>
+    </div>
+    <div id="postList"></div>
+  </section>
+
+  <section class="panel">
     <h2>Full activity log</h2>
     <div id="feedList"></div>
-  </div>
+  </section>
+
+  <section class="panel">
+    <h2>Daily email digest</h2>
+    <p class="dek" style="font-size:0.9rem;">What Courtney and Liz get every morning: changes from the last 24 hours, and what's coming up in the next 7 days. This previews live — nothing below is sent until you click Send.</p>
+    <div class="digest-preview" id="digestPreview">Loading preview…</div>
+    <button class="btn good" id="btnSendDigest">Send this now</button>
+    <div class="digest-note" id="digestNote"></div>
+  </section>
 
   <footer class="page-foot">
-    Only people with this exact link (and the PIN) can see this page. It shows the same shared approval log as the reviewer calendar — nothing here is separately stored or emailed. "New" means logged since your last visit to this admin page, tracked in this browser only.
+    Only people with this exact link (and the PIN) can see this page. Posts you add or edit here show up on the reviewer calendar immediately. "New" means logged since your last visit to this admin page, tracked in this browser only.
   </footer>
 </div>
+
+<dialog id="postFormDialog">
+  <div class="dlg-inner" id="postFormInner"></div>
+</dialog>
 
 <script src="posts.js"></script>
 <script>
@@ -208,11 +307,11 @@ footer.page-foot{
   'use strict';
 
   // ---------- lightweight PIN gate ----------
-  // This is a deterrent, not real security — the whole point of this tool is
-  // "no login required," and this page shares the same unauthenticated API
-  // as the reviewer calendar. Anyone who guesses this PIN and finds the URL
-  // could still reach it. To change the PIN, edit the string below and
-  // redeploy.
+  // This is a deterrent, not real security. The real protection is
+  // server-side: api/posts.js and api/digest.js check this same PIN
+  // against an ADMIN_PIN environment variable before accepting any write.
+  // To change the PIN, edit the string below AND the Vercel environment
+  // variable (see README), then redeploy.
   var ADMIN_PIN = 'sws2026';
   var PIN_KEY = 'sws_proofing_admin_pin_ok';
 
@@ -256,9 +355,14 @@ footer.page-foot{
     if (initialized) return;
     initialized = true;
 
-    var API = '/api/approvals';
+    var POSTS_API = '/api/posts';
+    var APPROVALS_API = '/api/approvals';
+    var DIGEST_API = '/api/digest';
     var POLL_MS = 15000;
     var SEEN_KEY = 'sws_proofing_admin_last_seen';
+
+    var POSTS = POSTS_SEED;
+    var approvals = {};
 
     // Capture "what she'd already seen" ONCE, before we overwrite it, so
     // items are marked NEW for this whole visit (including live poll
@@ -278,44 +382,55 @@ footer.page-foot{
         return d.toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
       } catch(e){ return iso; }
     }
+    function fmtDate(iso){
+      try {
+        var p = iso.split('-').map(Number);
+        var d = new Date(p[0], p[1]-1, p[2]);
+        return d.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+      } catch(e){ return iso; }
+    }
     function setConnNote(ok){
       var dot = document.getElementById('connDot');
       var text = document.getElementById('connNoteText');
       if (ok){ dot.className = 'conn-dot live'; text.textContent = 'Live — checking every 15 seconds'; }
       else { dot.className = 'conn-dot off'; text.textContent = "Can't reach the server — check your connection"; }
     }
+    function statusOf(iso){ return (approvals[iso] && approvals[iso].status) || 'pending'; }
+    function statusLabel(post, status){
+      if (!post || !post.drafted) return 'not drafted yet';
+      if (status === 'approved') return 'approved';
+      if (status === 'changes_requested') return 'changes requested';
+      return 'awaiting review';
+    }
+    function statusPillClass(post, status){
+      if (!post || !post.drafted) return 'notdrafted';
+      return status === 'approved' ? 'approved' : status === 'changes_requested' ? 'changes_requested' : 'pending';
+    }
 
-    function render(data){
-      var dates = Object.keys(POSTS).filter(function(d){ return POSTS[d].drafted; }).sort();
+    // ---------- rendering ----------
+    function render(){
+      var dates = Object.keys(POSTS).sort();
+      var draftedDates = dates.filter(function(d){ return POSTS[d].drafted; });
 
-      var counts = { pending:0, approved:0, changes_requested:0 };
-      dates.forEach(function(d){
-        var st = (data[d] && data[d].status) || 'pending';
+      var counts = { pending: 0, approved: 0, changes_requested: 0 };
+      draftedDates.forEach(function(d){
+        var st = statusOf(d);
         counts[st] = (counts[st] || 0) + 1;
       });
-      var notDrafted = Object.keys(POSTS).length - dates.length;
+      var notDrafted = dates.length - draftedDates.length;
 
-      var statsHtml =
+      document.getElementById('statsRow').innerHTML =
         '<div class="stat changes"><div class="n">' + counts.changes_requested + '</div><div class="lbl">Changes requested</div></div>' +
         '<div class="stat pending"><div class="n">' + counts.pending + '</div><div class="lbl">Awaiting review</div></div>' +
         '<div class="stat approved"><div class="n">' + counts.approved + '</div><div class="lbl">Approved</div></div>' +
         '<div class="stat"><div class="n">' + notDrafted + '</div><div class="lbl">Not drafted yet</div></div>';
-      document.getElementById('statsRow').innerHTML = statsHtml;
 
       // Flatten all activity across all dates into one feed, newest first.
       var all = [];
       dates.forEach(function(d){
-        var activity = (data[d] && data[d].activity) || [];
+        var activity = (approvals[d] && approvals[d].activity) || [];
         activity.forEach(function(a){
-          all.push({
-            date: d,
-            title: POSTS[d].title,
-            weekday: POSTS[d].weekday,
-            name: a.name,
-            verdict: a.verdict,
-            comment: a.comment,
-            at: a.at
-          });
+          all.push({ date: d, title: (POSTS[d] && POSTS[d].title) || d, name: a.name, verdict: a.verdict, comment: a.comment, at: a.at });
         });
       });
       all.sort(function(a, b){ return new Date(b.at) - new Date(a.at); });
@@ -340,6 +455,33 @@ footer.page-foot{
       }
       document.getElementById('notifyZone').innerHTML = notifyHtml;
 
+      // Manage posts list
+      var postListHtml = '';
+      if (!dates.length){
+        postListHtml = '<div class="feed-empty">No posts yet — click “Add new post” to get started.</div>';
+      } else {
+        dates.forEach(function(iso){
+          var post = POSTS[iso];
+          var status = statusOf(iso);
+          var needsChanges = post.drafted && status === 'changes_requested';
+          postListHtml += '<div class="post-row' + (needsChanges ? ' needs-changes' : '') + '">' +
+            '<div class="info"><div class="d">' + escapeHtml(fmtDate(iso)) + '</div><div class="t">' + escapeHtml(post.title) + '</div></div>' +
+            '<div class="tagrow">' +
+            '<span class="pill ' + statusPillClass(post, status) + '">' + escapeHtml(statusLabel(post, status)) + '</span>' +
+            (needsChanges ? '<button class="btn small" data-quick-resolve="' + iso + '">✓ Mark resolved</button>' : '') +
+            '<button class="btn small" data-edit="' + iso + '">Edit</button>' +
+            '</div></div>';
+        });
+      }
+      document.getElementById('postList').innerHTML = postListHtml;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-edit]'), function(btn){
+        btn.addEventListener('click', function(){ openPostForm(this.getAttribute('data-edit')); });
+      });
+      Array.prototype.forEach.call(document.querySelectorAll('[data-quick-resolve]'), function(btn){
+        btn.addEventListener('click', function(){ quickResolve(this.getAttribute('data-quick-resolve')); });
+      });
+
+      // Full activity feed
       var feedHtml = '';
       if (!all.length){
         feedHtml = '<div class="feed-empty">No decisions logged yet.</div>';
@@ -352,22 +494,203 @@ footer.page-foot{
             '<div class="verdict ' + item.verdict + '">' + (isNew(item) ? '<span class="new-tag">New</span>' : '') +
             escapeHtml(item.name) + ' — ' + verb + '</div>' +
             (item.comment ? '<div class="comment">“' + escapeHtml(item.comment) + '”</div>' : '') +
-            '<a class="open-link" href="index.html?open=' + encodeURIComponent(item.date) + '">Open in calendar →</a>' +
+            '<div class="row-actions"><a href="index.html?open=' + encodeURIComponent(item.date) + '">Open in calendar →</a></div>' +
             '</div>';
         });
       }
       document.getElementById('feedList').innerHTML = feedHtml;
     }
 
-    function fetchState(){
-      return fetch(API, { cache: 'no-store' })
-        .then(function(res){ if (!res.ok) throw new Error('bad status'); return res.json(); })
-        .then(function(data){ render(data || {}); setConnNote(true); })
-        .catch(function(){ setConnNote(false); });
+    // ---------- fetching ----------
+    function fetchAll(){
+      return Promise.all([
+        fetch(POSTS_API, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }),
+        fetch(APPROVALS_API, { cache: 'no-store' }).then(function(r){ return r.ok ? r.json() : null; }),
+      ]).then(function(results){
+        if (results[0]) POSTS = results[0];
+        if (results[1]) approvals = results[1];
+        render();
+        setConnNote(true);
+      }).catch(function(){ setConnNote(false); });
     }
 
-    fetchState();
-    setInterval(fetchState, POLL_MS);
+    fetchAll();
+    setInterval(fetchAll, POLL_MS);
+
+    // ---------- quick resolve (mark a changes-requested post as revised, no edit) ----------
+    function quickResolve(iso){
+      fetch(APPROVALS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ date: iso, verdict: 'revised', name: 'Correne', comment: '' })
+      }).then(function(){ fetchAll(); }).catch(function(){});
+    }
+
+    // ---------- add / edit post form ----------
+    var formDialog = document.getElementById('postFormDialog');
+    var formInner = document.getElementById('postFormInner');
+
+    function openPostForm(iso){
+      var isNewPost = !iso;
+      var post = iso && POSTS[iso] ? POSTS[iso] : {};
+      var status = iso ? statusOf(iso) : 'pending';
+      var pendingComments = [];
+      if (iso && status === 'changes_requested'){
+        pendingComments = ((approvals[iso] && approvals[iso].activity) || [])
+          .filter(function(a){ return a.verdict === 'changes_requested'; });
+      }
+
+      var html = '';
+      html += '<div class="dlg-head"><h2>' + (isNewPost ? 'Add new post' : 'Edit post') + '</h2>' +
+              '<button class="dlg-close" type="button" id="pfClose">✕</button></div>';
+
+      if (pendingComments.length){
+        html += '<div class="pending-note"><span class="eyebrow">Requested changes</span>';
+        pendingComments.slice().reverse().forEach(function(c){
+          html += '<div>' + escapeHtml(c.name) + ': “' + escapeHtml(c.comment || '(no note)') + '”</div>';
+        });
+        html += '</div>';
+      }
+
+      html += '<div class="form-row"><div class="field-label">Date</div>' +
+              '<input type="date" id="pfDate" value="' + (iso || '') + '" ' + (isNewPost ? '' : 'disabled') + '>' +
+              (isNewPost ? '' : '<div class="hint">To move a post to a different date, add it as a new post on the new date instead.</div>') +
+              '</div>';
+
+      html += '<div class="form-row"><div class="field-label">Title</div><input type="text" id="pfTitle" value="' + escapeHtml(post.title || '') + '"></div>';
+      html += '<div class="form-row"><div class="field-label">Platform</div><input type="text" id="pfPlatform" value="' + escapeHtml(post.platform || 'Instagram (auto-crossposts to Facebook + Stories)') + '"></div>';
+      html += '<div class="form-row"><div class="field-label">Caption <span style="text-transform:none;font-weight:400;">(leave blank for a title-only placeholder)</span></div><textarea id="pfCaption" class="tall">' + escapeHtml(post.caption || '') + '</textarea></div>';
+      html += '<div class="form-row"><div class="field-label">Hashtags <span style="text-transform:none;font-weight:400;">(one per line, or comma-separated)</span></div><textarea id="pfHashtags">' + escapeHtml((post.hashtags || []).join('\n')) + '</textarea></div>';
+      html += '<div class="form-row"><div class="field-label">Photo / video direction</div><textarea id="pfVisual">' + escapeHtml(post.visual || '') + '</textarea></div>';
+      html += '<div class="form-row"><div class="field-label">Alt text</div><textarea id="pfAlt">' + escapeHtml(post.alt || '') + '</textarea></div>';
+      html += '<div class="form-row"><div class="field-label">Note to reviewers <span style="text-transform:none;font-weight:400;">(optional, e.g. "this is a shell")</span></div><textarea id="pfNote">' + escapeHtml(post.note || '') + '</textarea></div>';
+      html += '<label class="checkline"><input type="checkbox" id="pfShell" ' + (post.shell ? 'checked' : '') + '> This is a shell — still needs day-of details filled in</label>';
+
+      if (pendingComments.length){
+        html += '<label class="checkline"><input type="checkbox" id="pfResolve" checked> Also mark resolved (clears “changes requested” so Courtney/Liz see it as ready for another look)</label>';
+      }
+
+      html += '<div class="dlg-actions">' +
+              '<button class="btn primary" id="pfSave">Save</button>' +
+              '<button class="btn" id="pfCancel">Cancel</button>' +
+              '<span class="dlg-err" id="pfErr"></span>' +
+              '</div>';
+
+      formInner.innerHTML = html;
+      document.getElementById('pfClose').addEventListener('click', function(){ formDialog.close(); });
+      document.getElementById('pfCancel').addEventListener('click', function(){ formDialog.close(); });
+      document.getElementById('pfSave').addEventListener('click', function(){ savePostForm(iso); });
+
+      if (typeof formDialog.showModal === 'function') formDialog.showModal();
+      if (isNewPost) document.getElementById('pfDate').focus();
+    }
+
+    function savePostForm(existingIso){
+      var errEl = document.getElementById('pfErr');
+      errEl.textContent = '';
+
+      var date = document.getElementById('pfDate').value;
+      var title = document.getElementById('pfTitle').value.trim();
+      if (!date){ errEl.textContent = 'Pick a date.'; return; }
+      if (!title){ errEl.textContent = 'Give it a title.'; return; }
+
+      var hashtagsRaw = document.getElementById('pfHashtags').value;
+      var hashtags = hashtagsRaw.split(/[\n,]+/).map(function(t){ return t.trim(); }).filter(Boolean);
+
+      var payload = {
+        pin: ADMIN_PIN,
+        date: date,
+        title: title,
+        platform: document.getElementById('pfPlatform').value.trim(),
+        caption: document.getElementById('pfCaption').value,
+        hashtags: hashtags,
+        visual: document.getElementById('pfVisual').value.trim(),
+        alt: document.getElementById('pfAlt').value.trim(),
+        note: document.getElementById('pfNote').value.trim(),
+        shell: document.getElementById('pfShell').checked
+      };
+
+      var resolveEl = document.getElementById('pfResolve');
+      var shouldResolve = resolveEl && resolveEl.checked;
+
+      var saveBtn = document.getElementById('pfSave');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'Saving…';
+
+      fetch(POSTS_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function(res){
+          if (!res.ok) return res.json().then(function(j){ throw new Error(j.error || 'Save failed'); });
+          return res.json();
+        })
+        .then(function(data){
+          POSTS = data;
+          if (shouldResolve && existingIso){
+            return fetch(APPROVALS_API, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ date: existingIso, verdict: 'revised', name: 'Correne', comment: '' })
+            });
+          }
+        })
+        .then(function(){
+          formDialog.close();
+          fetchAll();
+        })
+        .catch(function(e){
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save';
+          errEl.textContent = e.message || 'Couldn’t save — try again.';
+        });
+    }
+
+    document.getElementById('btnAddPost').addEventListener('click', function(){ openPostForm(null); });
+
+    // ---------- digest preview / send ----------
+    function loadDigestPreview(){
+      fetch(DIGEST_API, { cache: 'no-store' })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          document.getElementById('digestPreview').textContent = data.text || '(nothing to preview)';
+        })
+        .catch(function(){
+          document.getElementById('digestPreview').textContent = 'Couldn’t load a preview right now.';
+        });
+    }
+    loadDigestPreview();
+
+    document.getElementById('btnSendDigest').addEventListener('click', function(){
+      var btn = this;
+      var note = document.getElementById('digestNote');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      note.textContent = '';
+      note.className = 'digest-note';
+      fetch(DIGEST_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: ADMIN_PIN })
+      })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          btn.disabled = false;
+          btn.textContent = 'Send this now';
+          if (data.sent){
+            note.textContent = '✓ Sent to ' + (data.recipients || []).join(', ');
+            note.className = 'digest-note ok';
+          } else {
+            note.textContent = data.note || data.error || 'Nothing was sent.';
+          }
+        })
+        .catch(function(){
+          btn.disabled = false;
+          btn.textContent = 'Send this now';
+          note.textContent = 'Couldn’t reach the server — try again.';
+        });
+    });
   }
 })();
 </script>

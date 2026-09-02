@@ -117,6 +117,8 @@ button{ font-family:inherit; }
 .dot-changes{ background:var(--bad); }
 .dot-notdrafted{ background:var(--border-strong); }
 
+.month-block{ margin-bottom:2.2rem; }
+.month-heading{ font-size:1.05rem; margin-bottom:0.7rem; }
 .cal-scroll{ overflow-x:auto; border:1px solid var(--border); border-radius:6px; }
 .cal{ display:grid; grid-template-columns:repeat(7,minmax(126px,1fr)); min-width:882px; background:var(--border); gap:1px; }
 .cal-head{
@@ -140,6 +142,8 @@ button{ font-family:inherit; }
 .post-chip .sq{ flex:none; width:7px; height:7px; border-radius:2px; margin-top:0.3em; }
 .day-btn:hover .post-chip, .day-btn:focus-visible .post-chip{ border-color:var(--border-strong); background:var(--surface-3); }
 .day-btn:focus-visible{ outline:2px solid var(--accent-ink); outline-offset:2px; border-radius:4px; }
+
+.empty-state{ font-size:0.92rem; color:var(--text-muted); font-style:italic; padding:1.5rem 0; }
 
 /* ---------- dialog ---------- */
 dialog{
@@ -234,7 +238,7 @@ footer.page-foot{
 
   <div class="masthead">
     <span class="eyebrow">Approve or request changes</span>
-    <h1>Proof September's posts</h1>
+    <h1>Proof upcoming posts</h1>
     <p class="dek">Click any highlighted day to open the proposed caption, hashtags, and photo direction. Approve it as-is, or leave a note asking for changes.</p>
     <div class="callout">
       <span class="eyebrow">How this works</span>
@@ -263,9 +267,7 @@ footer.page-foot{
     <span><span class="dot dot-notdrafted"></span>Not drafted yet</span>
   </div>
 
-  <div class="cal-scroll">
-    <div class="cal" id="calGrid"></div>
-  </div>
+  <div id="calContainer"></div>
 
   <footer class="page-foot">
     Companion documents: <a href="https://claude.ai/code/artifact/5043ef52-aa1f-45c2-9de3-20f9d3dfacf5" target="_blank" rel="noopener">Social Media Field Guide</a>, <a href="https://claude.ai/code/artifact/5c060d60-484e-4f40-950c-d2ca0cc17738" target="_blank" rel="noopener">Social Media Voice Guide</a>, and the <a href="https://claude.ai/code/artifact/be8d976e-4414-45c0-8069-34423f1e1963" target="_blank" rel="noopener">September Launch Plan</a> this calendar is drawn from. Names entered above are self-reported, not verified logins — this page is meant to make review fast, not to replace judgment about who actually said what.
@@ -281,58 +283,104 @@ footer.page-foot{
 (function(){
   'use strict';
 
-  // POSTS comes from posts.js (shared with admin.html)
-  var POST_DATES = Object.keys(POSTS).sort();
+  // POSTS starts as the bundled seed (posts.js) and is replaced by live
+  // data from /api/posts as soon as that loads — see fetchPosts() below.
+  // Keeping the seed as a fallback means the page still shows *something*
+  // if the API is briefly unreachable.
+  var POSTS = POSTS_SEED;
 
-  // ---------- calendar grid: September 2026 (Sept 1 = Tuesday) ----------
-  var calGrid = document.getElementById('calGrid');
-  var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  WEEKDAYS.forEach(function(w){
-    var h = document.createElement('div');
-    h.className = 'cal-head';
-    h.textContent = w;
-    calGrid.appendChild(h);
-  });
-
-  var LEADING_EMPTY = 2; // Sept 1 2026 is a Tuesday
-  for (var i = 0; i < LEADING_EMPTY; i++){
-    var lead = document.createElement('div');
-    lead.className = 'cal-day empty';
-    calGrid.appendChild(lead);
-  }
+  var calContainer = document.getElementById('calContainer');
 
   function pad(n){ return n < 10 ? '0' + n : '' + n; }
+  function daysInMonth(y, m){ return new Date(y, m, 0).getDate(); } // m is 1-12
 
-  for (var day = 1; day <= 30; day++){
-    var iso = '2026-09-' + pad(day);
-    var cell = document.createElement('div');
-    cell.className = 'cal-day';
-
-    if (POSTS[iso]){
-      var btn = document.createElement('button');
-      btn.className = 'day-btn';
-      btn.type = 'button';
-      btn.setAttribute('data-date', iso);
-      btn.innerHTML =
-        '<span class="date">' + day + '</span>' +
-        '<div class="post-chip" data-chip="' + iso + '">' +
-          '<span class="sq dot-pending" data-dot="' + iso + '"></span>' +
-          '<span data-chiplabel="' + iso + '">' + POSTS[iso].title + '</span>' +
-        '</div>';
-      btn.addEventListener('click', function(){ openDialog(this.getAttribute('data-date')); });
-      cell.appendChild(btn);
-    } else {
-      cell.innerHTML = '<span class="date">' + day + '</span>';
+  function buildCalendar(){
+    calContainer.innerHTML = '';
+    var dates = Object.keys(POSTS);
+    if (!dates.length){
+      calContainer.innerHTML = '<div class="empty-state">Nothing on the calendar yet.</div>';
+      return;
     }
-    calGrid.appendChild(cell);
-  }
 
-  var totalCells = LEADING_EMPTY + 30;
-  var trailing = (7 - (totalCells % 7)) % 7;
-  for (var t = 0; t < trailing; t++){
-    var tr = document.createElement('div');
-    tr.className = 'cal-day empty';
-    calGrid.appendChild(tr);
+    // Group dates by "YYYY-MM", render one month grid per group, oldest first.
+    var months = {};
+    dates.forEach(function(iso){
+      var ym = iso.slice(0, 7);
+      (months[ym] = months[ym] || []).push(iso);
+    });
+    var ymKeys = Object.keys(months).sort();
+
+    ymKeys.forEach(function(ym){
+      var y = parseInt(ym.slice(0, 4), 10);
+      var m = parseInt(ym.slice(5, 7), 10); // 1-12
+      var monthLabel = new Date(y, m - 1, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+      var block = document.createElement('div');
+      block.className = 'month-block';
+      var heading = document.createElement('h2');
+      heading.className = 'month-heading';
+      heading.textContent = monthLabel;
+      block.appendChild(heading);
+
+      var scroll = document.createElement('div');
+      scroll.className = 'cal-scroll';
+      var grid = document.createElement('div');
+      grid.className = 'cal';
+
+      var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      WEEKDAYS.forEach(function(w){
+        var h = document.createElement('div');
+        h.className = 'cal-head';
+        h.textContent = w;
+        grid.appendChild(h);
+      });
+
+      var leadingEmpty = new Date(y, m - 1, 1).getDay();
+      for (var i = 0; i < leadingEmpty; i++){
+        var lead = document.createElement('div');
+        lead.className = 'cal-day empty';
+        grid.appendChild(lead);
+      }
+
+      var total = daysInMonth(y, m);
+      for (var day = 1; day <= total; day++){
+        var iso = ym + '-' + pad(day);
+        var cell = document.createElement('div');
+        cell.className = 'cal-day';
+
+        if (POSTS[iso]){
+          var btn = document.createElement('button');
+          btn.className = 'day-btn';
+          btn.type = 'button';
+          btn.setAttribute('data-date', iso);
+          btn.innerHTML =
+            '<span class="date">' + day + '</span>' +
+            '<div class="post-chip" data-chip="' + iso + '">' +
+              '<span class="sq dot-pending" data-dot="' + iso + '"></span>' +
+              '<span data-chiplabel="' + iso + '">' + POSTS[iso].title + '</span>' +
+            '</div>';
+          btn.addEventListener('click', function(){ openDialog(this.getAttribute('data-date')); });
+          cell.appendChild(btn);
+        } else {
+          cell.innerHTML = '<span class="date">' + day + '</span>';
+        }
+        grid.appendChild(cell);
+      }
+
+      var totalCells = leadingEmpty + total;
+      var trailing = (7 - (totalCells % 7)) % 7;
+      for (var t = 0; t < trailing; t++){
+        var tr = document.createElement('div');
+        tr.className = 'cal-day empty';
+        grid.appendChild(tr);
+      }
+
+      scroll.appendChild(grid);
+      block.appendChild(scroll);
+      calContainer.appendChild(block);
+    });
+
+    renderAllChips();
   }
 
   // ---------- reviewer name (per-viewer convenience only, stays in this browser) ----------
@@ -364,7 +412,22 @@ footer.page-foot{
   reviewerOther.addEventListener('input', function(){ saveReviewer(); refreshActionState(); });
   loadReviewer();
 
-  // ---------- shared server-backed store ----------
+  // ---------- posts (content) ----------
+  var POSTS_API = '/api/posts';
+  var POSTS_POLL_MS = 60000; // content changes less often than approvals
+
+  function fetchPosts(){
+    return fetch(POSTS_API, { cache: 'no-store' })
+      .then(function(res){ if (!res.ok) throw new Error('bad status'); return res.json(); })
+      .then(function(data){
+        POSTS = data || {};
+        buildCalendar();
+        if (currentOpenDate && POSTS[currentOpenDate]) renderDialogBody(currentOpenDate);
+      })
+      .catch(function(){ /* keep showing whatever we already had */ });
+  }
+
+  // ---------- shared server-backed approvals store ----------
   var API = '/api/approvals';
   var POLL_MS = 15000;
   var serverState = {}; // date -> {status, activity}
@@ -383,6 +446,7 @@ footer.page-foot{
 
   function renderChip(iso){
     var post = POSTS[iso];
+    if (!post) return;
     var dot = document.querySelector('[data-dot="' + iso + '"]');
     if (!dot) return;
     if (!post.drafted){
@@ -393,7 +457,7 @@ footer.page-foot{
     var status = state ? state.status : 'pending';
     dot.className = 'sq ' + dotClass(status);
   }
-  function renderAllChips(){ POST_DATES.forEach(renderChip); }
+  function renderAllChips(){ Object.keys(POSTS).forEach(renderChip); }
 
   function setConnNote(ok){
     var dot = document.getElementById('connDot');
@@ -415,8 +479,9 @@ footer.page-foot{
       .catch(function(){ setConnNote(false); });
   }
 
-  fetchState();
+  fetchPosts().then(fetchState);
   setInterval(fetchState, POLL_MS);
+  setInterval(fetchPosts, POSTS_POLL_MS);
 
   // ---------- dialog ----------
   var dialogEl = document.getElementById('postDialog');
@@ -435,8 +500,17 @@ footer.page-foot{
     });
   }
 
+  function fmtWeekday(iso){
+    try {
+      var p = iso.split('-').map(Number);
+      var d = new Date(p[0], p[1] - 1, p[2]);
+      return d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    } catch(e){ return iso; }
+  }
+
   function renderDialogBody(iso, flash){
     var post = POSTS[iso];
+    if (!post) { dialogEl.close(); return; }
     var state = serverState[iso] || { status: 'pending', activity: [] };
     var reviewer = getReviewerName();
     var canAct = !!reviewer && post.drafted && !saving;
@@ -444,7 +518,7 @@ footer.page-foot{
     var html = '';
     html += '<div class="dlg-head"><h2>' + escapeHtml(post.title) + '</h2>' +
             '<button class="dlg-close" type="button" aria-label="Close" id="dlgCloseBtn">✕</button></div>';
-    html += '<div class="dlg-meta">' + escapeHtml(post.weekday) + (post.platform ? ' · ' + escapeHtml(post.platform) : '') + '</div>';
+    html += '<div class="dlg-meta">' + escapeHtml(fmtWeekday(iso)) + (post.platform ? ' · ' + escapeHtml(post.platform) : '') + '</div>';
     html += '<span class="status-pill ' + statusClass(post.drafted ? state.status : 'notdrafted') + '">' +
             (post.drafted ? statusLabel(state.status) : 'Not drafted yet') + '</span>';
 
@@ -453,9 +527,9 @@ footer.page-foot{
     } else {
       if (post.note){ html += '<p class="plain-block" style="color:var(--text-muted);font-style:italic">' + escapeHtml(post.note) + '</p>'; }
       html += '<div class="field-label">Caption</div><div class="caption-block">' + escapeHtml(post.caption) + '</div>';
-      html += '<div class="field-label">Hashtags</div><div class="tags">' + post.hashtags.map(function(t){ return '<span>' + escapeHtml(t) + '</span>'; }).join('') + '</div>';
-      html += '<div class="field-label">Photo / video direction</div><p class="plain-block">' + escapeHtml(post.visual) + '</p>';
-      html += '<div class="field-label">Alt text</div><p class="plain-block">' + escapeHtml(post.alt) + '</p>';
+      html += '<div class="field-label">Hashtags</div><div class="tags">' + (post.hashtags || []).map(function(t){ return '<span>' + escapeHtml(t) + '</span>'; }).join('') + '</div>';
+      html += '<div class="field-label">Photo / video direction</div><p class="plain-block">' + escapeHtml(post.visual || '') + '</p>';
+      html += '<div class="field-label">Alt text</div><p class="plain-block">' + escapeHtml(post.alt || '') + '</p>';
 
       html += '<div class="dlg-actions">';
       html += '<button class="btn approve" id="btnApprove" ' + (canAct ? '' : 'disabled') + '>' + (saving ? 'Saving…' : '✓ Approve') + '</button>';
@@ -562,8 +636,10 @@ footer.page-foot{
     try {
       var params = new URLSearchParams(location.search);
       var wanted = params.get('open');
-      if (wanted && POSTS[wanted]){
-        fetchState().then(function(){ openDialog(wanted); });
+      if (wanted){
+        fetchPosts().then(function(){
+          if (POSTS[wanted]) { fetchState().then(function(){ openDialog(wanted); }); }
+        });
       }
     } catch(e){}
   })();

@@ -1,15 +1,18 @@
-// Shared post content for the proofing calendar (index.html) and the
-// admin notifications page (admin.html). Keeping this in one file means
-// editing a caption or adding a new date only has to happen once.
+// Starting content for the proofing calendar. This is only the SEED --
+// once the app is deployed, the live content lives in Vercel KV (edited
+// through the admin page) and this file is just what a brand-new
+// deployment starts from and what api/posts.js falls back to if the
+// database is ever unreachable.
 //
-// To add next month's posts: add more "YYYY-MM-DD" entries below, then
-// update the LEADING_EMPTY / day-count loop near the top of index.html's
-// <script> to match the new month.
+// Used two ways:
+//   - in the browser, as a plain global (POSTS_SEED) loaded via <script src="posts.js">
+//   - in Node (api/posts.js, api/digest.js), via require('../posts.js')
+//
+// Weekday is computed from the date key at render time, not stored here.
 
-var POSTS = {
+var POSTS_SEED = {
   "2026-09-09": {
     title: "Welcome Back — first day of school",
-    weekday: "Wednesday, September 9",
     platform: "Instagram (auto-crossposts to Facebook + Stories)",
     drafted: true,
     caption: "The backpacks are on, the name tags are up, and the halls are full again.\nWelcome back, Susquehanna Waldorf — we missed you.\nHere's to a year of story, song, and slow mornings.",
@@ -19,7 +22,6 @@ var POSTS = {
   },
   "2026-09-11": {
     title: "Grade One Rose Ceremony",
-    weekday: "Friday, September 11",
     platform: "Instagram (auto-crossposts to Facebook + Stories)",
     drafted: true,
     shell: true,
@@ -29,9 +31,13 @@ var POSTS = {
     alt: "[Write once photos are in — describe the specific moment shown.]",
     note: "This is a shell: the bracketed lines get filled in once Courtney's day-of photos land (Launch Plan → “Getting ahead”)."
   },
-  "2026-09-15": { title: "“Why Waldorf” post", weekday: "Tuesday, September 15", drafted: false },
-  "2026-09-18": { title: "Classroom-moment post", weekday: "Friday, September 18", drafted: false },
-  "2026-09-22": { title: "Michaelmas teaser (archive)", weekday: "Tuesday, September 22", drafted: false },
-  "2026-09-25": { title: "Admissions-priority post", weekday: "Friday, September 25", drafted: false },
-  "2026-09-30": { title: "Fresh Michaelmas post", weekday: "Wednesday, September 30", drafted: false }
+  "2026-09-15": { title: "“Why Waldorf” post", drafted: false },
+  "2026-09-18": { title: "Classroom-moment post", drafted: false },
+  "2026-09-22": { title: "Michaelmas teaser (archive)", drafted: false },
+  "2026-09-25": { title: "Admissions-priority post", drafted: false },
+  "2026-09-30": { title: "Fresh Michaelmas post", drafted: false }
 };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = POSTS_SEED;
+}

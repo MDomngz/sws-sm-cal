@@ -26,9 +26,20 @@ This is a static page (`index.html`) plus one small serverless function (`api/ap
 - Open your `.vercel.app` URL (or set up a custom domain in Vercel's **Domains** tab if you'd rather send Courtney and Liz something like `proofing.susquehannawaldorf.org`).
 - That's it — send them the link. No invite, no account, no password.
 
+## Admin notifications (for Correne)
+
+`admin.html` is a second page, not linked from the reviewer calendar, that shows Correne everything Courtney and Liz have approved or flagged — newest first, with a "since your last visit" banner at the top so she doesn't have to reread the whole log each time.
+
+- Share the direct link with her (e.g. `your-site.vercel.app/admin.html`) — it's deliberately not linked from `index.html`, so reviewers won't stumble onto it.
+- She "logs in" with a short PIN (defaults to `sws2026` — **change this before sharing the link**, see below). This is a light deterrent, not real security: the page reads from the same unauthenticated API as the calendar, same trade-off described below. It just keeps the admin view from being one click away from the reviewer link.
+- Once she's in, her browser remembers both the PIN and "the last time she checked." Each visit, anything logged since then is called out at the top and tagged **New** in the full activity list below. That tracking lives in her browser only (`localStorage`) — it's not emailed or texted anywhere, so if she checks from a different device or clears her browser data, it starts over.
+- Every item links to **Open in calendar →**, which jumps straight to that day's dialog on the main page.
+
+**To change the PIN:** open `admin.html`, find the line `var ADMIN_PIN = 'sws2026';` near the top of the `<script>` tag, change the value, and push the change (see below).
+
 ## Making changes later
 
-Edit `index.html` to update the drafted posts (captions, hashtags, photo direction) for September, or to add October's calendar next — everything content-related lives in the `POSTS` object near the top of the `<script>` tag. Push the change to GitHub's `main` branch and Vercel redeploys automatically within a minute or two. You're welcome to paste the updated file back to Claude and ask for the next month's calendar to be added the same way this one was built.
+Post content (captions, hashtags, photo direction) now lives in one shared file, `posts.js`, used by both `index.html` and `admin.html` — edit it there so the two pages never drift apart. To add October's calendar, add more `"YYYY-MM-DD"` entries to the `POSTS` object in `posts.js`, then update the day-count loop near the top of `index.html`'s `<script>` tag to match the new month. Push the change to GitHub's `main` branch and Vercel redeploys automatically within a minute or two. You're welcome to paste the updated files back to Claude and ask for the next month's calendar to be added the same way this one was built.
 
 ## How the data works
 

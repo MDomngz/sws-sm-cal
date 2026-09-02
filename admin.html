@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Content Proofing — SWS Social Media</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,450;0,9..144,560;0,9..144,650;1,9..144,500&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#FBF7EE;
+  --surface:#FFFFFF;
+  --surface-2:#F3ECDC;
+  --surface-3:#EDE3CC;
+  --text:#2A2620;
+  --text-muted:#726A59;
+  --accent:#8B3A2A;
+  --accent-ink:#6E2D20;
+  --accent-2:#A9701F;
+  --accent-3:#5C6E53;
+  --border:#E2D5B8;
+  --border-strong:#CBB98F;
+  --mono-bg:#2A2620;
+  --mono-text:#F1E7D3;
+  --mono-accent:#E3B15C;
+  --good:#5C6E53;
+  --good-ink:#3E4B38;
+  --warn:#A9701F;
+  --bad:#8B3A2A;
+  --bad-ink:#6E2D20;
+  --shadow: 0 1px 2px rgba(72,54,24,0.06), 0 8px 24px -12px rgba(72,54,24,0.18);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#211B14;
+    --surface:#2A2318;
+    --surface-2:#332A1C;
+    --surface-3:#3B301F;
+    --text:#F1E7D3;
+    --text-muted:#BBAC8D;
+    --accent:#E28F6E;
+    --accent-ink:#F1AC8F;
+    --accent-2:#E3B15C;
+    --accent-3:#9BB18C;
+    --border:#4A3C27;
+    --border-strong:#5E4C30;
+    --mono-bg:#17130D;
+    --mono-text:#F1E7D3;
+    --mono-accent:#E3B15C;
+    --good:#9BB18C;
+    --good-ink:#C7D6BC;
+    --warn:#E3B15C;
+    --bad:#E28F6E;
+    --bad-ink:#F1AC8F;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.55);
+  }
+}
+
+*{box-sizing:border-box;}
+html,body{ background:var(--bg); }
+body{
+  margin:0; color:var(--text);
+  font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;
+  font-size:16.5px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{ font-family:'Fraunces',Georgia,serif; font-weight:600; color:var(--text); text-wrap:balance; margin:0; }
+a{ color:var(--accent-ink); }
+p{ margin:0 0 0.9em; max-width:68ch; }
+button{ font-family:inherit; }
+.eyebrow{ font-family:'Source Sans 3',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.11em; text-transform:uppercase; color:var(--accent-3); }
+
+.wrap{ max-width:760px; margin:0 auto; padding:2.4rem clamp(1.2rem,4vw,3rem) 5rem; }
+
+.topbar{
+  display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap;
+  padding-bottom:1.1rem; margin-bottom:2rem; border-bottom:1px solid var(--border);
+  font-size:0.85rem; color:var(--text-muted);
+}
+.topbar .mark{ font-family:'Fraunces',serif; font-weight:650; color:var(--accent); }
+.topbar a{ color:var(--text-muted); }
+.topbar a:hover{ color:var(--text); }
+
+/* ---------- PIN gate ---------- */
+.gate{
+  max-width:360px; margin:4rem auto; background:var(--surface); border:1px solid var(--border);
+  border-radius:8px; padding:1.8rem 1.6rem; box-shadow:var(--shadow); text-align:center;
+}
+.gate h1{ font-size:1.4rem; margin-bottom:0.5rem; }
+.gate p{ font-size:0.9rem; color:var(--text-muted); margin:0 auto 1.1rem; }
+.gate input{
+  width:100%; font-family:'JetBrains Mono',monospace; font-size:1rem; text-align:center; letter-spacing:0.15em;
+  padding:0.6rem 0.7rem; border:1px solid var(--border-strong); border-radius:5px; background:var(--bg); color:var(--text);
+  margin-bottom:0.8rem;
+}
+.gate .err{ font-size:0.82rem; color:var(--bad-ink); min-height:1.2em; margin-bottom:0.6rem; }
+
+/* ---------- masthead ---------- */
+.masthead{ margin-bottom:1.6rem; }
+.masthead h1{ font-size:clamp(1.7rem,3vw,2.1rem); margin:0.4rem 0 0.5rem; }
+.masthead .dek{ font-size:1rem; color:var(--text-muted); }
+
+/* ---------- summary ---------- */
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:0.7rem; margin:1.6rem 0 2rem; }
+.stat{ background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:0.8rem 0.9rem; box-shadow:var(--shadow); }
+.stat .n{ font-family:'Fraunces',serif; font-weight:650; font-size:1.5rem; line-height:1; }
+.stat .lbl{ font-size:0.74rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.04em; margin-top:0.3rem; }
+.stat.changes .n{ color:var(--bad-ink); }
+.stat.approved .n{ color:var(--good-ink); }
+.stat.pending .n{ color:var(--warn); }
+
+/* ---------- notification banner ---------- */
+.banner{
+  background:color-mix(in srgb, var(--bad) 12%, var(--surface)); border:1px solid var(--bad);
+  border-radius:7px; padding:1rem 1.2rem; margin-bottom:1.8rem;
+}
+.banner .eyebrow{ color:var(--bad-ink); display:block; margin-bottom:0.4rem; }
+.banner h2{ font-size:1.15rem; margin-bottom:0.5rem; }
+.banner ul{ margin:0; padding-left:1.1rem; font-size:0.9rem; }
+.banner li{ margin-bottom:0.35rem; }
+.banner-caughtup{
+  background:var(--surface); border:1px solid var(--border); border-radius:7px;
+  padding:0.9rem 1.2rem; margin-bottom:1.8rem; font-size:0.9rem; color:var(--text-muted);
+}
+
+/* ---------- activity feed ---------- */
+.feed h2{ font-size:1.05rem; margin-bottom:0.9rem; }
+.feed-item{
+  background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  padding:0.85rem 1rem; margin-bottom:0.7rem; position:relative;
+}
+.feed-item.is-new{ border-color:var(--bad); }
+.feed-item .row1{ display:flex; justify-content:space-between; align-items:baseline; gap:0.6rem; flex-wrap:wrap; }
+.feed-item .title{ font-weight:700; }
+.feed-item .when{ font-size:0.78rem; color:var(--text-muted); white-space:nowrap; }
+.feed-item .verdict{ font-size:0.86rem; margin:0.25rem 0 0.15rem; }
+.feed-item .verdict.approved{ color:var(--good-ink); }
+.feed-item .verdict.changes_requested{ color:var(--bad-ink); }
+.feed-item .verdict.revised{ color:var(--warn); }
+.feed-item .comment{ font-size:0.88rem; font-style:italic; color:var(--text); }
+.new-tag{
+  display:inline-block; font-size:0.66rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  background:var(--bad); color:#FBF7EE; border-radius:99px; padding:0.12rem 0.5rem; margin-right:0.5rem; vertical-align:middle;
+}
+.feed-item .open-link{ font-size:0.8rem; display:inline-block; margin-top:0.4rem; }
+.feed-empty{ font-size:0.9rem; color:var(--text-muted); font-style:italic; }
+
+.conn-note{ font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem; }
+.conn-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:0.4em; background:var(--border-strong); }
+.conn-dot.live{ background:var(--good); }
+.conn-dot.off{ background:var(--bad); }
+
+footer.page-foot{
+  max-width:70ch; margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--border);
+  font-size:0.8rem; color:var(--text-muted);
+}
+[hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="gateWrap">
+  <div class="gate">
+    <span class="eyebrow">Correne only</span>
+    <h1>Admin sign-in</h1>
+    <p>This page isn't linked from the calendar Courtney and Liz use — it's just for you. Enter the admin PIN to see what's changed.</p>
+    <input type="password" id="pinInput" inputmode="numeric" placeholder="PIN" autocomplete="off">
+    <div class="err" id="pinErr"></div>
+    <button class="btn" id="pinSubmit" style="width:100%; font-size:0.92rem; font-weight:600; padding:0.6rem 1rem; border-radius:5px; cursor:pointer; border:1px solid var(--border-strong); background:var(--accent); color:#FBF7EE;">Enter</button>
+  </div>
+</div>
+
+<div class="wrap" id="adminWrap" hidden>
+  <div class="topbar">
+    <span><span class="mark">SWS Social Media</span> · Admin</span>
+    <span>
+      <a href="index.html">Open reviewer calendar</a>
+      &nbsp;·&nbsp;
+      <a href="#" id="signOutLink">Sign out</a>
+    </span>
+  </div>
+
+  <div class="masthead">
+    <span class="eyebrow">What's changed</span>
+    <h1>Content proofing — admin</h1>
+    <p class="dek">Everything Courtney and Liz have approved or flagged, newest first. This updates automatically while you have the page open.</p>
+  </div>
+
+  <div class="conn-note"><span class="conn-dot" id="connDot"></span><span id="connNoteText">Connecting…</span></div>
+
+  <div class="stats" id="statsRow"></div>
+
+  <div id="notifyZone"></div>
+
+  <div class="feed">
+    <h2>Full activity log</h2>
+    <div id="feedList"></div>
+  </div>
+
+  <footer class="page-foot">
+    Only people with this exact link (and the PIN) can see this page. It shows the same shared approval log as the reviewer calendar — nothing here is separately stored or emailed. "New" means logged since your last visit to this admin page, tracked in this browser only.
+  </footer>
+</div>
+
+<script src="posts.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  // ---------- lightweight PIN gate ----------
+  // This is a deterrent, not real security — the whole point of this tool is
+  // "no login required," and this page shares the same unauthenticated API
+  // as the reviewer calendar. Anyone who guesses this PIN and finds the URL
+  // could still reach it. To change the PIN, edit the string below and
+  // redeploy.
+  var ADMIN_PIN = 'sws2026';
+  var PIN_KEY = 'sws_proofing_admin_pin_ok';
+
+  var gateWrap = document.getElementById('gateWrap');
+  var adminWrap = document.getElementById('adminWrap');
+  var pinInput = document.getElementById('pinInput');
+  var pinErr = document.getElementById('pinErr');
+  var pinSubmit = document.getElementById('pinSubmit');
+
+  function showAdmin(){
+    gateWrap.hidden = true;
+    adminWrap.hidden = false;
+    initAdmin();
+  }
+  function tryPin(){
+    if (pinInput.value === ADMIN_PIN){
+      try { localStorage.setItem(PIN_KEY, '1'); } catch(e){}
+      showAdmin();
+    } else {
+      pinErr.textContent = 'That PIN doesn’t match — try again.';
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  }
+  pinSubmit.addEventListener('click', tryPin);
+  pinInput.addEventListener('keydown', function(e){ if (e.key === 'Enter') tryPin(); });
+
+  var alreadyIn = false;
+  try { alreadyIn = localStorage.getItem(PIN_KEY) === '1'; } catch(e){}
+  if (alreadyIn){ showAdmin(); } else { pinInput.focus(); }
+
+  document.getElementById('signOutLink').addEventListener('click', function(e){
+    e.preventDefault();
+    try { localStorage.removeItem(PIN_KEY); } catch(e){}
+    location.reload();
+  });
+
+  // ---------- admin dashboard ----------
+  var initialized = false;
+  function initAdmin(){
+    if (initialized) return;
+    initialized = true;
+
+    var API = '/api/approvals';
+    var POLL_MS = 15000;
+    var SEEN_KEY = 'sws_proofing_admin_last_seen';
+
+    // Capture "what she'd already seen" ONCE, before we overwrite it, so
+    // items are marked NEW for this whole visit (including live poll
+    // refreshes) rather than clearing the moment the first fetch lands.
+    var seenBefore = null;
+    try { seenBefore = localStorage.getItem(SEEN_KEY); } catch(e){}
+    try { localStorage.setItem(SEEN_KEY, new Date().toISOString()); } catch(e){}
+
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, function(c){
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+      });
+    }
+    function fmtWhen(iso){
+      try {
+        var d = new Date(iso);
+        return d.toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+      } catch(e){ return iso; }
+    }
+    function setConnNote(ok){
+      var dot = document.getElementById('connDot');
+      var text = document.getElementById('connNoteText');
+      if (ok){ dot.className = 'conn-dot live'; text.textContent = 'Live — checking every 15 seconds'; }
+      else { dot.className = 'conn-dot off'; text.textContent = "Can't reach the server — check your connection"; }
+    }
+
+    function render(data){
+      var dates = Object.keys(POSTS).filter(function(d){ return POSTS[d].drafted; }).sort();
+
+      var counts = { pending:0, approved:0, changes_requested:0 };
+      dates.forEach(function(d){
+        var st = (data[d] && data[d].status) || 'pending';
+        counts[st] = (counts[st] || 0) + 1;
+      });
+      var notDrafted = Object.keys(POSTS).length - dates.length;
+
+      var statsHtml =
+        '<div class="stat changes"><div class="n">' + counts.changes_requested + '</div><div class="lbl">Changes requested</div></div>' +
+        '<div class="stat pending"><div class="n">' + counts.pending + '</div><div class="lbl">Awaiting review</div></div>' +
+        '<div class="stat approved"><div class="n">' + counts.approved + '</div><div class="lbl">Approved</div></div>' +
+        '<div class="stat"><div class="n">' + notDrafted + '</div><div class="lbl">Not drafted yet</div></div>';
+      document.getElementById('statsRow').innerHTML = statsHtml;
+
+      // Flatten all activity across all dates into one feed, newest first.
+      var all = [];
+      dates.forEach(function(d){
+        var activity = (data[d] && data[d].activity) || [];
+        activity.forEach(function(a){
+          all.push({
+            date: d,
+            title: POSTS[d].title,
+            weekday: POSTS[d].weekday,
+            name: a.name,
+            verdict: a.verdict,
+            comment: a.comment,
+            at: a.at
+          });
+        });
+      });
+      all.sort(function(a, b){ return new Date(b.at) - new Date(a.at); });
+
+      var isNew = function(item){ return seenBefore && new Date(item.at) > new Date(seenBefore); };
+      var newItems = seenBefore ? all.filter(isNew) : [];
+
+      var notifyHtml = '';
+      if (newItems.length){
+        notifyHtml += '<div class="banner"><span class="eyebrow">Since your last visit</span>' +
+          '<h2>' + newItems.length + ' update' + (newItems.length === 1 ? '' : 's') + ' to review</h2><ul>';
+        newItems.forEach(function(item){
+          var verb = item.verdict === 'approved' ? 'approved' : item.verdict === 'revised' ? 'marked revised' : 'requested changes on';
+          notifyHtml += '<li><a href="index.html?open=' + encodeURIComponent(item.date) + '">' + escapeHtml(item.title) + '</a> — ' +
+            escapeHtml(item.name) + ' ' + verb + (item.comment ? ': “' + escapeHtml(item.comment) + '”' : '') + '</li>';
+        });
+        notifyHtml += '</ul></div>';
+      } else if (seenBefore) {
+        notifyHtml = '<div class="banner-caughtup">You’re all caught up — nothing new since your last visit.</div>';
+      } else {
+        notifyHtml = '<div class="banner-caughtup">First time here — showing the full history below. New activity from here on will be flagged at the top.</div>';
+      }
+      document.getElementById('notifyZone').innerHTML = notifyHtml;
+
+      var feedHtml = '';
+      if (!all.length){
+        feedHtml = '<div class="feed-empty">No decisions logged yet.</div>';
+      } else {
+        all.forEach(function(item){
+          var verb = item.verdict === 'approved' ? '✓ Approved' : item.verdict === 'revised' ? '↺ Marked revised' : '✎ Requested changes';
+          feedHtml += '<div class="feed-item' + (isNew(item) ? ' is-new' : '') + '">' +
+            '<div class="row1"><span class="title">' + escapeHtml(item.title) + '</span>' +
+            '<span class="when">' + fmtWhen(item.at) + '</span></div>' +
+            '<div class="verdict ' + item.verdict + '">' + (isNew(item) ? '<span class="new-tag">New</span>' : '') +
+            escapeHtml(item.name) + ' — ' + verb + '</div>' +
+            (item.comment ? '<div class="comment">“' + escapeHtml(item.comment) + '”</div>' : '') +
+            '<a class="open-link" href="index.html?open=' + encodeURIComponent(item.date) + '">Open in calendar →</a>' +
+            '</div>';
+        });
+      }
+      document.getElementById('feedList').innerHTML = feedHtml;
+    }
+
+    function fetchState(){
+      return fetch(API, { cache: 'no-store' })
+        .then(function(res){ if (!res.ok) throw new Error('bad status'); return res.json(); })
+        .then(function(data){ render(data || {}); setConnNote(true); })
+        .catch(function(){ setConnNote(false); });
+    }
+
+    fetchState();
+    setInterval(fetchState, POLL_MS);
+  }
+})();
+</script>
+</body>
+</html>

@@ -43,6 +43,17 @@ She "logs in" with a short PIN (defaults to `sws2026`). This is a light deterren
 
 If you only change #1, the server (api/posts.js, api/digest.js) still accepts the old default — anyone who knows it could still push edits or trigger a send. Setting #2 is what actually enforces it.
 
+## Importing content from Claude
+
+The admin page has an "Import from Claude" section for exactly this: draft with Claude, then bring the result in without retyping it into the form.
+
+1. Click **Copy prompt for Claude** — it copies a ready-made prompt that already lists which calendar dates still need a caption, links the Field Guide and Voice Guide so Claude matches the school's voice, and specifies the exact JSON shape to reply in.
+2. Paste that into a Claude conversation (claude.ai, or this same assistant). Claude replies with a JSON code block — one entry per date.
+3. Paste Claude's reply into the box on the admin page and click **Preview import**. Each entry is shown as **New** (a date not yet on the calendar), **Will update existing post** (a date that already has content — reviewing this list before confirming is what stops an accidental overwrite), or **Skipped** (missing a title or a malformed date, with the reason shown).
+4. Click **Import N posts** to save them all. They show up in "Manage posts" and on the reviewer calendar right away.
+
+The same flow handles revisions — ask Claude to revise a specific date (mention what Courtney or Liz asked to change), paste the reply back in, and it'll show as an update to that existing post rather than a duplicate.
+
 ## Daily email digest (for Courtney and Liz)
 
 Every morning, an email can go out to Courtney and Liz summarizing what changed in the last 24 hours and what's coming up in the next 7 days. The content logic is built and ready; **sending is off until you configure an email provider** — until then, it's a safe no-op that just tells you nothing was sent.

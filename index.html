@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Content Proofing — SWS Social Media</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,450;0,9..144,560;0,9..144,650;1,9..144,500&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#FBF7EE;
+  --surface:#FFFFFF;
+  --surface-2:#F3ECDC;
+  --surface-3:#EDE3CC;
+  --text:#2A2620;
+  --text-muted:#726A59;
+  --accent:#8B3A2A;
+  --accent-ink:#6E2D20;
+  --accent-2:#A9701F;
+  --accent-3:#5C6E53;
+  --border:#E2D5B8;
+  --border-strong:#CBB98F;
+  --mono-bg:#2A2620;
+  --mono-text:#F1E7D3;
+  --mono-accent:#E3B15C;
+  --good:#5C6E53;
+  --good-ink:#3E4B38;
+  --warn:#A9701F;
+  --bad:#8B3A2A;
+  --bad-ink:#6E2D20;
+  --shadow: 0 1px 2px rgba(72,54,24,0.06), 0 8px 24px -12px rgba(72,54,24,0.18);
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#211B14;
+    --surface:#2A2318;
+    --surface-2:#332A1C;
+    --surface-3:#3B301F;
+    --text:#F1E7D3;
+    --text-muted:#BBAC8D;
+    --accent:#E28F6E;
+    --accent-ink:#F1AC8F;
+    --accent-2:#E3B15C;
+    --accent-3:#9BB18C;
+    --border:#4A3C27;
+    --border-strong:#5E4C30;
+    --mono-bg:#17130D;
+    --mono-text:#F1E7D3;
+    --mono-accent:#E3B15C;
+    --good:#9BB18C;
+    --good-ink:#C7D6BC;
+    --warn:#E3B15C;
+    --bad:#E28F6E;
+    --bad-ink:#F1AC8F;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.55);
+  }
+}
+
+*{box-sizing:border-box;}
+html,body{ background:var(--bg); }
+body{
+  margin:0; color:var(--text);
+  font-family:'Source Sans 3','Segoe UI',system-ui,sans-serif;
+  font-size:16.5px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{ font-family:'Fraunces',Georgia,serif; font-weight:600; color:var(--text); text-wrap:balance; margin:0; }
+a{ color:var(--accent-ink); }
+p{ margin:0 0 0.9em; max-width:68ch; }
+button{ font-family:inherit; }
+.eyebrow{ font-family:'Source Sans 3',sans-serif; font-size:0.72rem; font-weight:700; letter-spacing:0.11em; text-transform:uppercase; color:var(--accent-3); }
+::selection{ background:var(--accent-2); color:#2A2318; }
+
+.wrap{ max-width:1000px; margin:0 auto; padding:2.4rem clamp(1.2rem,4vw,3rem) 5rem; }
+
+.topbar{
+  display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap;
+  padding-bottom:1.1rem; margin-bottom:2.2rem; border-bottom:1px solid var(--border);
+  font-size:0.85rem; color:var(--text-muted);
+}
+.topbar .mark{ font-family:'Fraunces',serif; font-weight:650; color:var(--accent); }
+.topbar a{ color:var(--text-muted); }
+.topbar a:hover{ color:var(--text); }
+
+.masthead{ max-width:66ch; margin-bottom:1.6rem; }
+.masthead h1{ font-size:clamp(1.9rem,3.4vw,2.5rem); margin:0.5rem 0 0.7rem; }
+.masthead .dek{ font-size:1.08rem; color:var(--text-muted); max-width:56ch; }
+
+.callout{
+  background:var(--surface-2); border:1px solid var(--border); border-radius:3px;
+  padding:1rem 1.2rem; margin-top:1.1rem; font-size:0.88rem; color:var(--text);
+}
+.callout p:last-child{ margin-bottom:0; }
+.callout .eyebrow{ display:block; margin-bottom:0.35rem; }
+
+/* ---------- reviewer bar ---------- */
+.reviewer-bar{
+  display:flex; align-items:center; gap:0.7rem; flex-wrap:wrap;
+  background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  padding:0.8rem 1.1rem; margin:1.6rem 0 2rem; box-shadow:var(--shadow);
+}
+.reviewer-bar label{ font-size:0.82rem; font-weight:700; color:var(--accent-3); text-transform:uppercase; letter-spacing:0.04em; }
+.reviewer-bar select, .reviewer-bar input[type=text]{
+  font-family:'Source Sans 3',sans-serif; font-size:0.92rem; padding:0.4rem 0.6rem;
+  border:1px solid var(--border-strong); border-radius:4px; background:var(--bg); color:var(--text);
+}
+.conn-note{ font-size:0.78rem; color:var(--text-muted); margin-left:auto; }
+.conn-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:0.4em; background:var(--border-strong); }
+.conn-dot.live{ background:var(--good); }
+.conn-dot.off{ background:var(--bad); }
+
+/* ---------- calendar ---------- */
+.cal-legend{ display:flex; flex-wrap:wrap; gap:0.5rem 1.3rem; margin:0 0 1.1rem; font-size:0.82rem; color:var(--text-muted); }
+.cal-legend .dot{ display:inline-block; width:8px; height:8px; border-radius:2px; margin-right:0.45em; }
+.dot-pending{ background:var(--warn); }
+.dot-approved{ background:var(--good); }
+.dot-changes{ background:var(--bad); }
+.dot-notdrafted{ background:var(--border-strong); }
+
+.cal-scroll{ overflow-x:auto; border:1px solid var(--border); border-radius:6px; }
+.cal{ display:grid; grid-template-columns:repeat(7,minmax(126px,1fr)); min-width:882px; background:var(--border); gap:1px; }
+.cal-head{
+  background:var(--surface-2); color:var(--accent-3); font-size:0.72rem; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.05em; padding:0.55rem 0.7rem;
+}
+.cal-day{ background:var(--surface); min-height:104px; padding:0.5rem; }
+.cal-day.empty{ background:var(--surface-2); }
+.cal-day .date{ font-family:'Fraunces',serif; font-weight:650; font-size:0.95rem; display:block; margin-bottom:0.4rem; color:var(--text-muted); }
+
+.day-btn{
+  display:block; width:100%; height:100%; text-align:left; background:none; border:none;
+  padding:0; margin:0; cursor:pointer; color:inherit; font:inherit;
+}
+.day-btn .date{ color:var(--text); }
+.post-chip{
+  display:flex; align-items:flex-start; gap:0.4rem; font-size:0.74rem; line-height:1.3;
+  border-radius:4px; padding:0.3rem 0.4rem; background:var(--surface-2);
+  border:1px solid var(--border);
+}
+.post-chip .sq{ flex:none; width:7px; height:7px; border-radius:2px; margin-top:0.3em; }
+.day-btn:hover .post-chip, .day-btn:focus-visible .post-chip{ border-color:var(--border-strong); background:var(--surface-3); }
+.day-btn:focus-visible{ outline:2px solid var(--accent-ink); outline-offset:2px; border-radius:4px; }
+
+/* ---------- dialog ---------- */
+dialog{
+  border:none; border-radius:8px; padding:0; background:var(--surface); color:var(--text);
+  max-width:600px; width:92vw; box-shadow:0 24px 60px -20px rgba(0,0,0,0.4);
+}
+dialog::backdrop{ background:rgba(30,24,14,0.45); }
+.dlg-inner{ padding:1.6rem 1.7rem 1.8rem; max-height:82vh; overflow-y:auto; }
+.dlg-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:0.2rem; }
+.dlg-head h2{ font-size:1.3rem; }
+.dlg-close{
+  flex:none; width:1.9rem; height:1.9rem; border-radius:50%; border:1px solid var(--border-strong);
+  background:var(--surface-2); color:var(--text); font-size:1rem; line-height:1; cursor:pointer;
+}
+.dlg-meta{ font-size:0.85rem; color:var(--text-muted); margin-bottom:1.1rem; }
+
+.status-pill{
+  display:inline-block; font-size:0.72rem; font-weight:700; letter-spacing:0.04em; text-transform:uppercase;
+  padding:0.25rem 0.6rem; border-radius:99px; margin-bottom:1rem;
+}
+.status-pill.pending{ background:color-mix(in srgb, var(--warn) 20%, transparent); color:var(--warn); }
+.status-pill.approved{ background:color-mix(in srgb, var(--good) 22%, transparent); color:var(--good-ink); }
+.status-pill.changes{ background:color-mix(in srgb, var(--bad) 20%, transparent); color:var(--bad-ink); }
+.status-pill.notdrafted{ background:var(--surface-2); color:var(--text-muted); }
+
+.field-label{ font-size:0.72rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:var(--accent-3); margin:1rem 0 0.35rem; }
+.field-label:first-of-type{ margin-top:0; }
+.caption-block{
+  background:var(--mono-bg); color:var(--mono-text); border-radius:5px; padding:0.9rem 1.05rem;
+  font-family:'JetBrains Mono',monospace; font-size:0.8rem; line-height:1.6; white-space:pre-wrap;
+}
+.tags{ display:flex; flex-wrap:wrap; gap:0.4rem; }
+.tags span{ font-family:'JetBrains Mono',monospace; font-size:0.76rem; background:var(--surface-2); border:1px solid var(--border); color:var(--text); padding:0.2rem 0.55rem; border-radius:99px; }
+.plain-block{ font-size:0.92rem; }
+
+.dlg-actions{ display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:1.4rem; align-items:center; }
+.btn{
+  font-size:0.88rem; font-weight:600; padding:0.55rem 1rem; border-radius:5px; cursor:pointer;
+  border:1px solid var(--border-strong); background:var(--surface-2); color:var(--text);
+}
+.btn:hover{ background:var(--surface-3); }
+.btn.approve{ background:var(--good); border-color:var(--good-ink); color:#FBF7EE; }
+.btn.approve:hover{ filter:brightness(0.95); }
+.btn.changes{ background:var(--bad); border-color:var(--bad-ink); color:#FBF7EE; }
+.btn.changes:hover{ filter:brightness(0.95); }
+.btn:disabled{ opacity:0.55; cursor:not-allowed; }
+
+.changes-form{ margin-top:0.9rem; display:none; }
+.changes-form.open{ display:block; }
+.changes-form textarea{
+  width:100%; min-height:5rem; font-family:'Source Sans 3',sans-serif; font-size:0.92rem;
+  padding:0.6rem 0.7rem; border:1px solid var(--border-strong); border-radius:5px; background:var(--bg); color:var(--text);
+  resize:vertical;
+}
+
+.save-flash{ font-size:0.84rem; font-weight:600; }
+.save-flash.ok{ color:var(--good-ink); }
+.save-flash.err{ color:var(--bad-ink); }
+
+.activity{ margin-top:1.3rem; border-top:1px solid var(--border); padding-top:1rem; }
+.activity-item{ display:flex; gap:0.6rem; font-size:0.86rem; margin-bottom:0.65rem; }
+.activity-item .dot{ flex:none; width:8px; height:8px; border-radius:50%; margin-top:0.4em; }
+.activity-item.approved .dot{ background:var(--good); }
+.activity-item.changes_requested .dot{ background:var(--bad); }
+.activity-item.revised .dot{ background:var(--warn); }
+.activity-item .who{ font-weight:700; }
+.activity-item .when{ color:var(--text-muted); font-size:0.78rem; }
+.activity-empty{ font-size:0.86rem; color:var(--text-muted); font-style:italic; }
+
+.revise-row{ margin-top:0.9rem; }
+.revise-row .btn{ font-size:0.82rem; }
+
+footer.page-foot{
+  max-width:70ch; margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--border);
+  font-size:0.8rem; color:var(--text-muted);
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <span><span class="mark">SWS Social Media</span> · Content Proofing</span>
+    <span>
+      <a href="https://claude.ai/code/artifact/5043ef52-aa1f-45c2-9de3-20f9d3dfacf5" target="_blank" rel="noopener">Field Guide</a>
+      &nbsp;·&nbsp;
+      <a href="https://claude.ai/code/artifact/5c060d60-484e-4f40-950c-d2ca0cc17738" target="_blank" rel="noopener">Voice Guide</a>
+      &nbsp;·&nbsp;
+      <a href="https://claude.ai/code/artifact/be8d976e-4414-45c0-8069-34423f1e1963" target="_blank" rel="noopener">Launch Plan</a>
+    </span>
+  </div>
+
+  <div class="masthead">
+    <span class="eyebrow">Approve or request changes</span>
+    <h1>Proof September's posts</h1>
+    <p class="dek">Click any highlighted day to open the proposed caption, hashtags, and photo direction. Approve it as-is, or leave a note asking for changes.</p>
+    <div class="callout">
+      <span class="eyebrow">How this works</span>
+      <p>No account or sign-in needed — anyone with this link can open it and decide. Approvals and change requests save immediately and are visible to everyone who opens this page (it checks for updates automatically every 15 seconds, or just reopen a day to see the latest).</p>
+    </div>
+  </div>
+
+  <div class="reviewer-bar">
+    <label for="reviewerSelect">Reviewing as</label>
+    <select id="reviewerSelect">
+      <option value="">Choose your name…</option>
+      <option value="Courtney">Courtney</option>
+      <option value="Liz">Liz</option>
+      <option value="Correne">Correne</option>
+      <option value="Marisa">Marisa</option>
+      <option value="__other__">Someone else…</option>
+    </select>
+    <input type="text" id="reviewerOther" placeholder="Your name" style="display:none; max-width:9rem;">
+    <span class="conn-note"><span class="conn-dot" id="connDot"></span><span id="connNoteText">Connecting…</span></span>
+  </div>
+
+  <div class="cal-legend">
+    <span><span class="dot dot-pending"></span>Awaiting review</span>
+    <span><span class="dot dot-approved"></span>Approved</span>
+    <span><span class="dot dot-changes"></span>Changes requested</span>
+    <span><span class="dot dot-notdrafted"></span>Not drafted yet</span>
+  </div>
+
+  <div class="cal-scroll">
+    <div class="cal" id="calGrid"></div>
+  </div>
+
+  <footer class="page-foot">
+    Companion documents: <a href="https://claude.ai/code/artifact/5043ef52-aa1f-45c2-9de3-20f9d3dfacf5" target="_blank" rel="noopener">Social Media Field Guide</a>, <a href="https://claude.ai/code/artifact/5c060d60-484e-4f40-950c-d2ca0cc17738" target="_blank" rel="noopener">Social Media Voice Guide</a>, and the <a href="https://claude.ai/code/artifact/be8d976e-4414-45c0-8069-34423f1e1963" target="_blank" rel="noopener">September Launch Plan</a> this calendar is drawn from. Names entered above are self-reported, not verified logins — this page is meant to make review fast, not to replace judgment about who actually said what.
+  </footer>
+</div>
+
+<dialog id="postDialog">
+  <div class="dlg-inner" id="dlgInner"></div>
+</dialog>
+
+<script>
+(function(){
+  'use strict';
+
+  // ---------- static content: what's been drafted for each date ----------
+  var POSTS = {
+    "2026-09-09": {
+      title: "Welcome Back — first day of school",
+      weekday: "Wednesday, September 9",
+      platform: "Instagram (auto-crossposts to Facebook + Stories)",
+      drafted: true,
+      caption: "The backpacks are on, the name tags are up, and the halls are full again.\nWelcome back, Susquehanna Waldorf — we missed you.\nHere's to a year of story, song, and slow mornings.",
+      hashtags: ["#SusquehannaWaldorf","#SWS","#WaldorfEducation","#UnhurriedChildhood","#LancasterCountyMoms","#MariettaPA"],
+      visual: "Walk-in shots from drop-off — backpacks, first-day excitement, Liz's welcome table at the entry. Candid, warm natural light, no posed smiles (Voice Guide §04).",
+      alt: "Children arriving for the first day of school, backpacks on, parents and teachers greeting them at the entrance."
+    },
+    "2026-09-11": {
+      title: "Grade One Rose Ceremony",
+      weekday: "Friday, September 11",
+      platform: "Instagram (auto-crossposts to Facebook + Stories)",
+      drafted: true,
+      shell: true,
+      caption: "With the start of the school year comes a beautiful Waldorf tradition: the Grade One Rose Ceremony. 🌹\nOur rising 1st graders are led by their Kindergarten teachers across a footbridge, and met on the other side by their new grades teachers — a moment held in real reverence by our school and parent community.\nAs they cross, each is handed a rose by their 8th-grade buddy for the year: a welcome into the grades. [Courtney's day-of detail goes here — a specific moment, a name if cleared.] That same pairing bookends the year — next spring, these 1st graders will hand a rose back to their buddies as they graduate 8th grade.\n⭐ Congratulations to our rising 1st graders!",
+      hashtags: ["#SusquehannaWaldorf","#SWSCommunity","#WaldorfEducation","#WaldorfInspired","#HeadHeartHands","#LancasterCountyMoms"],
+      visual: "Courtney's day-of photos — the footbridge crossing and the rose handoff between an 8th grader and an incoming 1st grader are traditionally the strongest images.",
+      alt: "[Write once photos are in — describe the specific moment shown.]",
+      note: "This is a shell: the bracketed lines get filled in once Courtney's day-of photos land (Launch Plan → “Getting ahead”)."
+    },
+    "2026-09-15": { title: "“Why Waldorf” post", weekday: "Tuesday, September 15", drafted: false },
+    "2026-09-18": { title: "Classroom-moment post", weekday: "Friday, September 18", drafted: false },
+    "2026-09-22": { title: "Michaelmas teaser (archive)", weekday: "Tuesday, September 22", drafted: false },
+    "2026-09-25": { title: "Admissions-priority post", weekday: "Friday, September 25", drafted: false },
+    "2026-09-30": { title: "Fresh Michaelmas post", weekday: "Wednesday, September 30", drafted: false }
+  };
+
+  var POST_DATES = Object.keys(POSTS).sort();
+
+  // ---------- calendar grid: September 2026 (Sept 1 = Tuesday) ----------
+  var calGrid = document.getElementById('calGrid');
+  var WEEKDAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  WEEKDAYS.forEach(function(w){
+    var h = document.createElement('div');
+    h.className = 'cal-head';
+    h.textContent = w;
+    calGrid.appendChild(h);
+  });
+
+  var LEADING_EMPTY = 2; // Sept 1 2026 is a Tuesday
+  for (var i = 0; i < LEADING_EMPTY; i++){
+    var lead = document.createElement('div');
+    lead.className = 'cal-day empty';
+    calGrid.appendChild(lead);
+  }
+
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  for (var day = 1; day <= 30; day++){
+    var iso = '2026-09-' + pad(day);
+    var cell = document.createElement('div');
+    cell.className = 'cal-day';
+
+    if (POSTS[iso]){
+      var btn = document.createElement('button');
+      btn.className = 'day-btn';
+      btn.type = 'button';
+      btn.setAttribute('data-date', iso);
+      btn.innerHTML =
+        '<span class="date">' + day + '</span>' +
+        '<div class="post-chip" data-chip="' + iso + '">' +
+          '<span class="sq dot-pending" data-dot="' + iso + '"></span>' +
+          '<span data-chiplabel="' + iso + '">' + POSTS[iso].title + '</span>' +
+        '</div>';
+      btn.addEventListener('click', function(){ openDialog(this.getAttribute('data-date')); });
+      cell.appendChild(btn);
+    } else {
+      cell.innerHTML = '<span class="date">' + day + '</span>';
+    }
+    calGrid.appendChild(cell);
+  }
+
+  var totalCells = LEADING_EMPTY + 30;
+  var trailing = (7 - (totalCells % 7)) % 7;
+  for (var t = 0; t < trailing; t++){
+    var tr = document.createElement('div');
+    tr.className = 'cal-day empty';
+    calGrid.appendChild(tr);
+  }
+
+  // ---------- reviewer name (per-viewer convenience only, stays in this browser) ----------
+  var reviewerSelect = document.getElementById('reviewerSelect');
+  var reviewerOther = document.getElementById('reviewerOther');
+
+  function getReviewerName(){
+    if (reviewerSelect.value === '__other__') return (reviewerOther.value || '').trim();
+    return reviewerSelect.value;
+  }
+  function loadReviewer(){
+    try {
+      var saved = localStorage.getItem('sws_proofing_reviewer');
+      if (saved){
+        var opts = Array.prototype.map.call(reviewerSelect.options, function(o){ return o.value; });
+        if (opts.indexOf(saved) > -1){ reviewerSelect.value = saved; }
+        else { reviewerSelect.value = '__other__'; reviewerOther.style.display = 'inline-block'; reviewerOther.value = saved; }
+      }
+    } catch(e){}
+  }
+  function saveReviewer(){
+    try { localStorage.setItem('sws_proofing_reviewer', getReviewerName()); } catch(e){}
+  }
+  reviewerSelect.addEventListener('change', function(){
+    reviewerOther.style.display = (reviewerSelect.value === '__other__') ? 'inline-block' : 'none';
+    saveReviewer();
+    refreshActionState();
+  });
+  reviewerOther.addEventListener('input', function(){ saveReviewer(); refreshActionState(); });
+  loadReviewer();
+
+  // ---------- shared server-backed store ----------
+  var API = '/api/approvals';
+  var POLL_MS = 15000;
+  var serverState = {}; // date -> {status, activity}
+  var currentOpenDate = null;
+  var saving = false;
+
+  function statusLabel(s){
+    return s === 'approved' ? 'Approved' : s === 'changes_requested' ? 'Changes requested' : 'Awaiting review';
+  }
+  function statusClass(s){
+    return s === 'approved' ? 'approved' : s === 'changes_requested' ? 'changes' : s === 'notdrafted' ? 'notdrafted' : 'pending';
+  }
+  function dotClass(s){
+    return s === 'approved' ? 'dot-approved' : s === 'changes_requested' ? 'dot-changes' : 'dot-pending';
+  }
+
+  function renderChip(iso){
+    var post = POSTS[iso];
+    var dot = document.querySelector('[data-dot="' + iso + '"]');
+    if (!dot) return;
+    if (!post.drafted){
+      dot.className = 'sq dot-notdrafted';
+      return;
+    }
+    var state = serverState[iso];
+    var status = state ? state.status : 'pending';
+    dot.className = 'sq ' + dotClass(status);
+  }
+  function renderAllChips(){ POST_DATES.forEach(renderChip); }
+
+  function setConnNote(ok){
+    var dot = document.getElementById('connDot');
+    var text = document.getElementById('connNoteText');
+    if (!dot || !text) return;
+    if (ok){ dot.className = 'conn-dot live'; text.textContent = 'Live — shared with everyone'; }
+    else { dot.className = 'conn-dot off'; text.textContent = "Can't reach the server — check your connection"; }
+  }
+
+  function fetchState(){
+    return fetch(API, { cache: 'no-store' })
+      .then(function(res){ if (!res.ok) throw new Error('bad status'); return res.json(); })
+      .then(function(data){
+        serverState = data || {};
+        renderAllChips();
+        if (currentOpenDate) renderDialogBody(currentOpenDate);
+        setConnNote(true);
+      })
+      .catch(function(){ setConnNote(false); });
+  }
+
+  fetchState();
+  setInterval(fetchState, POLL_MS);
+
+  // ---------- dialog ----------
+  var dialogEl = document.getElementById('postDialog');
+  var dlgInner = document.getElementById('dlgInner');
+
+  function fmtWhen(iso){
+    try {
+      var d = new Date(iso);
+      return d.toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' });
+    } catch(e){ return iso; }
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderDialogBody(iso, flash){
+    var post = POSTS[iso];
+    var state = serverState[iso] || { status: 'pending', activity: [] };
+    var reviewer = getReviewerName();
+    var canAct = !!reviewer && post.drafted && !saving;
+
+    var html = '';
+    html += '<div class="dlg-head"><h2>' + escapeHtml(post.title) + '</h2>' +
+            '<button class="dlg-close" type="button" aria-label="Close" id="dlgCloseBtn">✕</button></div>';
+    html += '<div class="dlg-meta">' + escapeHtml(post.weekday) + (post.platform ? ' · ' + escapeHtml(post.platform) : '') + '</div>';
+    html += '<span class="status-pill ' + statusClass(post.drafted ? state.status : 'notdrafted') + '">' +
+            (post.drafted ? statusLabel(state.status) : 'Not drafted yet') + '</span>';
+
+    if (!post.drafted){
+      html += '<p class="plain-block">There’s nothing to review here yet — this post hasn’t been drafted. Check back closer to the date, or ask Correne where it stands.</p>';
+    } else {
+      if (post.note){ html += '<p class="plain-block" style="color:var(--text-muted);font-style:italic">' + escapeHtml(post.note) + '</p>'; }
+      html += '<div class="field-label">Caption</div><div class="caption-block">' + escapeHtml(post.caption) + '</div>';
+      html += '<div class="field-label">Hashtags</div><div class="tags">' + post.hashtags.map(function(t){ return '<span>' + escapeHtml(t) + '</span>'; }).join('') + '</div>';
+      html += '<div class="field-label">Photo / video direction</div><p class="plain-block">' + escapeHtml(post.visual) + '</p>';
+      html += '<div class="field-label">Alt text</div><p class="plain-block">' + escapeHtml(post.alt) + '</p>';
+
+      html += '<div class="dlg-actions">';
+      html += '<button class="btn approve" id="btnApprove" ' + (canAct ? '' : 'disabled') + '>' + (saving ? 'Saving…' : '✓ Approve') + '</button>';
+      html += '<button class="btn changes" id="btnChanges" ' + (canAct ? '' : 'disabled') + '>✎ Request changes</button>';
+      if (flash === 'ok') html += '<span class="save-flash ok">✓ Saved</span>';
+      if (flash === 'err') html += '<span class="save-flash err">Couldn’t save — try again</span>';
+      html += '</div>';
+      if (!reviewer){ html += '<p style="font-size:0.8rem;color:var(--text-muted);margin-top:0.5rem">Choose your name above to approve or request changes.</p>'; }
+
+      html += '<div class="changes-form" id="changesForm">' +
+              '<div class="field-label">What needs to change?</div>' +
+              '<textarea id="changesText" placeholder="e.g. swap the second photo, soften the last line…"></textarea>' +
+              '<div class="dlg-actions"><button class="btn changes" id="btnSubmitChanges" ' + (saving ? 'disabled' : '') + '>' + (saving ? 'Sending…' : 'Send request') + '</button>' +
+              '<button class="btn" id="btnCancelChanges">Cancel</button></div>' +
+              '</div>';
+
+      if (state.status === 'changes_requested'){
+        html += '<div class="revise-row"><button class="btn" id="btnMarkRevised" ' + (canAct ? '' : 'disabled') + '>↺ Mark revised — back to awaiting review</button></div>';
+      }
+
+      html += '<div class="activity"><div class="field-label">Activity</div>';
+      if (!state.activity.length){
+        html += '<div class="activity-empty">No decisions logged yet.</div>';
+      } else {
+        state.activity.slice().reverse().forEach(function(a){
+          var verb = a.verdict === 'approved' ? 'approved' : a.verdict === 'revised' ? 'marked revised' : 'requested changes';
+          html += '<div class="activity-item ' + a.verdict + '"><span class="dot"></span><div>' +
+                  '<span class="who">' + escapeHtml(a.name) + '</span> ' + verb +
+                  (a.comment ? ' — “' + escapeHtml(a.comment) + '”' : '') +
+                  '<div class="when">' + fmtWhen(a.at) + '</div></div></div>';
+        });
+      }
+      html += '</div>';
+    }
+
+    dlgInner.innerHTML = html;
+
+    var closeBtn = document.getElementById('dlgCloseBtn');
+    if (closeBtn) closeBtn.addEventListener('click', function(){ dialogEl.close(); });
+
+    var approveBtn = document.getElementById('btnApprove');
+    if (approveBtn) approveBtn.addEventListener('click', function(){ recordDecision(iso, 'approved', ''); });
+
+    var changesBtn = document.getElementById('btnChanges');
+    var changesForm = document.getElementById('changesForm');
+    if (changesBtn) changesBtn.addEventListener('click', function(){ changesForm.classList.add('open'); document.getElementById('changesText').focus(); });
+
+    var cancelBtn = document.getElementById('btnCancelChanges');
+    if (cancelBtn) cancelBtn.addEventListener('click', function(){ changesForm.classList.remove('open'); });
+
+    var submitBtn = document.getElementById('btnSubmitChanges');
+    if (submitBtn) submitBtn.addEventListener('click', function(){
+      var text = document.getElementById('changesText').value.trim();
+      if (!text) return;
+      recordDecision(iso, 'changes_requested', text);
+    });
+
+    var reviseBtn = document.getElementById('btnMarkRevised');
+    if (reviseBtn) reviseBtn.addEventListener('click', function(){ recordDecision(iso, 'revised', ''); });
+  }
+
+  function recordDecision(iso, verdict, comment){
+    var reviewer = getReviewerName();
+    if (!reviewer || saving) return;
+    saving = true;
+    renderDialogBody(iso);
+    fetch(API, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: iso, verdict: verdict, name: reviewer, comment: comment || '' })
+    })
+      .then(function(res){ if (!res.ok) throw new Error('save failed'); return res.json(); })
+      .then(function(data){
+        serverState = data;
+        saving = false;
+        renderChip(iso);
+        renderDialogBody(iso, 'ok');
+      })
+      .catch(function(){
+        saving = false;
+        renderDialogBody(iso, 'err');
+      });
+  }
+
+  function openDialog(iso){
+    currentOpenDate = iso;
+    renderDialogBody(iso);
+    if (typeof dialogEl.showModal === 'function') dialogEl.showModal();
+    fetchState();
+  }
+  dialogEl.addEventListener('close', function(){ currentOpenDate = null; });
+  dialogEl.addEventListener('click', function(e){
+    var r = dialogEl.getBoundingClientRect();
+    var inside = r.top <= e.clientY && e.clientY <= r.top + r.height && r.left <= e.clientX && e.clientX <= r.left + r.width;
+    if (!inside) dialogEl.close();
+  });
+
+  function refreshActionState(){
+    if (currentOpenDate) renderDialogBody(currentOpenDate);
+  }
+})();
+</script>
+</body>
+</html>

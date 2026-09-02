@@ -1,0 +1,9 @@
+{
+  "name": "sws-content-proofing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Susquehanna Waldorf School — social media content proofing calendar (static frontend + Vercel serverless API + Vercel KV).",
+  "dependencies": {
+    "@vercel/kv": "^1.0.1"
+  }
+}

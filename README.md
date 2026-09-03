@@ -9,7 +9,7 @@ This is a static site (`index.html` for reviewers, `admin.html` for Correne) plu
 **1. Put this folder on GitHub.**
 - Go to [github.com](https://github.com) and sign in (or create a free account).
 - Click **New repository**, name it something like `sws-content-proofing`, keep it Private or Public (either works), and create it.
-- On the new repo's page, click **uploading an existing file** and drag in every file from this folder — `index.html`, `admin.html`, `posts.js`, `drive.js`, `package.json`, `.gitignore`, `vercel.json`, `README.md`, and the `api` folder with `approvals.js`, `posts.js`, and `digest.js` inside it. Commit the upload.
+- On the new repo's page, click **uploading an existing file** and drag in every file from this folder — `index.html`, `admin.html`, `posts.js`, `markers.js`, `drive.js`, `package.json`, `.gitignore`, `vercel.json`, `README.md`, and the `api` folder with `approvals.js`, `posts.js`, `markers.js`, and `digest.js` inside it. Commit the upload.
 
 **2. Import it into Vercel.**
 - Go to [vercel.com](https://vercel.com) and sign in with your GitHub account (this also connects the two).
@@ -50,6 +50,12 @@ Every post can carry up to 6 image links, shown as a thumbnail grid reviewers ca
 **To add them:** in the admin page's Add/Edit form, paste up to 6 Google Drive links into "Image links," one per line (or comma-separated). Each file needs its Drive sharing set to **"Anyone with the link can view"** — otherwise the thumbnail won't load and it falls back to a plain "Open image" link instead (safe either way, just less convenient). This works with the standard link Drive gives you from its Share button, in any of its usual shapes (`.../file/d/.../view`, `.../open?id=...`, `.../uc?id=...`).
 
 **How it works:** `drive.js` (a small shared helper, loaded by both `index.html` and `admin.html`) picks the file ID out of whatever link shape you pasted and builds a thumbnail URL from it. That thumbnail endpoint is an unofficial one Google doesn't formally document, but it's what most small tools use for exactly this and has been stable in practice — if it ever stops working for a given link, reviewers still get a working "Open image" link, they just lose the inline preview.
+
+## Calendar context (school events, capture/admin/engage days)
+
+Below each post — and on days with no post at all — the calendar can show small muted tags for the surrounding production rhythm: school events (Michaelmas, the Rose Ceremony), capture days, admin/outreach days, and light-engagement days. These come from `markers.js` and aren't things Courtney or Liz approve, just context for why the posting schedule looks the way it does that week.
+
+There's no admin-page UI for these yet — they're added by editing `markers.js` (an array of `{ kind, label }` per date; `kind` is `event`, `capture`, `admin`, or `engage`) and redeploying, the same way you'd edit `posts.js` directly for a from-scratch setup. Paste the file to Claude any time you want a month's markers filled in from that month's Launch Plan.
 
 ## Importing content from Claude
 

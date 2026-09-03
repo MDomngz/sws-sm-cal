@@ -31,7 +31,7 @@ var POSTS_SEED = {
     alt: "[Write once photos are in — describe the specific moment shown.]",
     note: "This is a shell: the bracketed lines get filled in once Courtney's day-of photos land (Launch Plan → “Getting ahead”)."
   },
-  "2026-09-15": {
+  "2026-09-23": {
     title: "“Why Waldorf” — knitting before reading",
     platform: "Instagram (auto-crossposts to Facebook + Stories)",
     drafted: true,

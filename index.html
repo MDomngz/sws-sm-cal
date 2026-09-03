@@ -116,11 +116,6 @@ button{ font-family:inherit; }
 .dot-approved{ background:var(--good); }
 .dot-changes{ background:var(--bad); }
 .dot-notdrafted{ background:var(--border-strong); }
-.cal-legend.context{ margin-top:-0.6rem; }
-.dot-event{ background:var(--accent-ink); }
-.dot-capture{ background:var(--accent-3); }
-.dot-admin{ background:var(--accent-2); }
-.dot-engage{ background:var(--text-muted); }
 
 .month-block{ margin-bottom:2.2rem; }
 .month-heading{ font-size:1.05rem; margin-bottom:0.7rem; }
@@ -147,10 +142,6 @@ button{ font-family:inherit; }
 .post-chip .sq{ flex:none; width:7px; height:7px; border-radius:2px; margin-top:0.3em; }
 .day-btn:hover .post-chip, .day-btn:focus-visible .post-chip{ border-color:var(--border-strong); background:var(--surface-3); }
 .day-btn:focus-visible{ outline:2px solid var(--accent-ink); outline-offset:2px; border-radius:4px; }
-
-.marker-tags{ margin-top:0.35rem; display:flex; flex-direction:column; gap:0.2rem; }
-.marker-tag{ display:flex; align-items:flex-start; gap:0.35rem; font-size:0.68rem; line-height:1.25; color:var(--text-muted); }
-.marker-tag .sq{ flex:none; width:6px; height:6px; border-radius:2px; margin-top:0.32em; }
 
 .empty-state{ font-size:0.92rem; color:var(--text-muted); font-style:italic; padding:1.5rem 0; }
 
@@ -286,12 +277,6 @@ footer.page-foot{
     <span><span class="dot dot-changes"></span>Changes requested</span>
     <span><span class="dot dot-notdrafted"></span>Not drafted yet</span>
   </div>
-  <div class="cal-legend context">
-    <span><span class="dot dot-event"></span>School event</span>
-    <span><span class="dot dot-capture"></span>Capture day</span>
-    <span><span class="dot dot-admin"></span>Draft / admin</span>
-    <span><span class="dot dot-engage"></span>Engage (light)</span>
-  </div>
 
   <div id="calContainer"></div>
 
@@ -305,7 +290,6 @@ footer.page-foot{
 </dialog>
 
 <script src="posts.js"></script>
-<script src="markers.js"></script>
 <script src="drive.js"></script>
 <script>
 (function(){
@@ -317,10 +301,6 @@ footer.page-foot{
   // if the API is briefly unreachable.
   var POSTS = POSTS_SEED;
 
-  // Same idea as POSTS, for the lightweight context markers (markers.js) --
-  // starts as the bundled seed, replaced by live data from /api/markers.
-  var MARKERS = (typeof MARKERS_SEED !== 'undefined') ? MARKERS_SEED : {};
-
   var calContainer = document.getElementById('calContainer');
 
   function pad(n){ return n < 10 ? '0' + n : '' + n; }
@@ -328,7 +308,7 @@ footer.page-foot{
 
   function buildCalendar(){
     calContainer.innerHTML = '';
-    var dates = Object.keys(POSTS).concat(Object.keys(MARKERS));
+    var dates = Object.keys(POSTS);
     if (!dates.length){
       calContainer.innerHTML = '<div class="empty-state">Nothing on the calendar yet.</div>';
       return;
@@ -380,11 +360,6 @@ footer.page-foot{
         var cell = document.createElement('div');
         cell.className = 'cal-day';
 
-        var dayMarkers = MARKERS[iso] || [];
-        var markerHtml = dayMarkers.length ? '<div class="marker-tags">' + dayMarkers.map(function(mk){
-          return '<div class="marker-tag"><span class="sq dot-' + mk.kind + '"></span><span>' + escapeHtml(mk.label) + '</span></div>';
-        }).join('') + '</div>' : '';
-
         if (POSTS[iso]){
           var btn = document.createElement('button');
           btn.className = 'day-btn';
@@ -395,11 +370,9 @@ footer.page-foot{
             '<div class="post-chip" data-chip="' + iso + '">' +
               '<span class="sq dot-pending" data-dot="' + iso + '"></span>' +
               '<span data-chiplabel="' + iso + '">' + POSTS[iso].title + '</span>' +
-            '</div>' + markerHtml;
+            '</div>';
           btn.addEventListener('click', function(){ openDialog(this.getAttribute('data-date')); });
           cell.appendChild(btn);
-        } else if (dayMarkers.length){
-          cell.innerHTML = '<span class="date">' + day + '</span>' + markerHtml;
         } else {
           cell.innerHTML = '<span class="date">' + day + '</span>';
         }
@@ -466,20 +439,6 @@ footer.page-foot{
       .catch(function(){ /* keep showing whatever we already had */ });
   }
 
-  // ---------- context markers (read-only) ----------
-  var MARKERS_API = '/api/markers';
-  var MARKERS_POLL_MS = 60000; // same cadence as posts -- this is static context, not live state
-
-  function fetchMarkers(){
-    return fetch(MARKERS_API, { cache: 'no-store' })
-      .then(function(res){ if (!res.ok) throw new Error('bad status'); return res.json(); })
-      .then(function(data){
-        MARKERS = data || {};
-        buildCalendar();
-      })
-      .catch(function(){ /* keep showing whatever we already had */ });
-  }
-
   // ---------- shared server-backed approvals store ----------
   var API = '/api/approvals';
   var POLL_MS = 15000;
@@ -535,8 +494,6 @@ footer.page-foot{
   fetchPosts().then(fetchState);
   setInterval(fetchState, POLL_MS);
   setInterval(fetchPosts, POSTS_POLL_MS);
-  fetchMarkers();
-  setInterval(fetchMarkers, MARKERS_POLL_MS);
 
   // ---------- dialog ----------
   var dialogEl = document.getElementById('postDialog');
